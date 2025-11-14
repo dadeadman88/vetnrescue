@@ -144,12 +144,6 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.clinicName}>{item.name}</Text>
-        <Text style={styles.distance}>{item.distance}</Text>
-      </View>
-      
-      <View style={styles.infoRow}>
-        <StarIcon />
-        <Text style={styles.infoText}>{item.rating}</Text>
       </View>
       
       <View style={styles.infoRow}>
@@ -160,19 +154,6 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
       <View style={styles.infoRow}>
         <PhoneIcon />
         <Text style={styles.infoText}>{item.phone}</Text>
-      </View>
-      
-      <View style={styles.statusContainer}>
-        <View style={[
-          styles.statusBadge,
-          item.status === "Closed" ? styles.closedBadge : styles.openBadge
-        ]}>
-          {item.status === "Closed" ? <CloseIcon /> : <CheckIcon />}
-          <Text style={[
-            styles.statusText,
-            item.status === "Closed" ? styles.closedText : styles.openText
-          ]}>{item.status}</Text>
-        </View>
       </View>
       
       <View style={styles.buttonsContainer}>
@@ -190,6 +171,29 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
         </TouchableOpacity>
       </View>
     </View>
+  );
+};
+
+const ReportPetCard = ({ language }: { language: 'en' | 'ar' }) => {
+  const navigation = useNavigation<any>();
+  return (
+    <View style={styles.reportPetContainer}>
+    <Text style={styles.reportPetHeading}>
+      {language === 'ar' ? 'وجدت حيوانًا ضالاً؟' : 'Found a stray animal?'}
+    </Text>
+    <Text style={styles.reportPetDescription}>
+      {language === 'ar' 
+        ? 'أبلغ عنه الآن وسنساعدك في العثور على أقرب مركز إنقاذ'
+        : "Report it now and we'll help you find the nearest rescue center"
+      }
+    </Text>
+    <TouchableOpacity onPress={() => navigation.navigate(SCREENS.EDIT_PROFILE)} style={styles.reportPetButton}>
+      <DocumentReportIcon />
+      <Text style={styles.reportPetButtonText}>
+        {language === 'ar' ? 'الإبلاغ عن حيوان ضال' : 'Report Stray Animal'}
+      </Text>
+    </TouchableOpacity>
+  </View>
   );
 };
 
@@ -234,6 +238,116 @@ const FitnessDetail = () => {
               />
             </View>
           </View>
+
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.tabsScrollView}
+            contentContainerStyle={styles.tabsContainer}
+          >
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "All Pets" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("All Pets")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "All Pets" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'جميع الحيوانات' : 'All Pets'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "Cats" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("Cats")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "Cats" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'القطط' : 'Cats'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "Dogs" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("Dogs")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "Dogs" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'الكلاب' : 'Dogs'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "Birds" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("Birds")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "Birds" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'الطيور' : 'Birds'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "Fish" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("Fish")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "Fish" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'الأسماك' : 'Fish'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                activeTab === "Turtles" && styles.activeTab,
+                { 
+                  paddingVertical: language === 'ar' ? 5 : 12,
+                  paddingHorizontal: language === 'ar' ? 30 : 20 
+                },
+              ]}
+              onPress={() => setActiveTab("Turtles")}
+            >
+              <RNView style={styles.tabTextContainer}>
+                <Text style={[styles.tabLabel, activeTab === "Turtles" && styles.activeTabLabel]}>
+                  {language === 'ar' ? 'السلاحف' : 'Turtles'}
+                </Text>
+              </RNView>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
         
         <FlatList
@@ -245,23 +359,6 @@ const FitnessDetail = () => {
           style={styles.list}
           ListHeaderComponent={
             <>
-              <View style={styles.reportPetContainer}>
-                <Text style={styles.reportPetHeading}>
-                  {language === 'ar' ? 'وجدت حيوانًا ضالاً؟' : 'Found a stray animal?'}
-                </Text>
-                <Text style={styles.reportPetDescription}>
-                  {language === 'ar' 
-                    ? 'أبلغ عنه الآن وسنساعدك في العثور على أقرب مركز إنقاذ'
-                    : "Report it now and we'll help you find the nearest rescue center"
-                  }
-                </Text>
-                <TouchableOpacity onPress={() => navigation.navigate(SCREENS.EDIT_PROFILE)} style={styles.reportPetButton}>
-                  <DocumentReportIcon />
-                  <Text style={styles.reportPetButtonText}>
-                    {language === 'ar' ? 'الإبلاغ عن حيوان ضال' : 'Report Stray Animal'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
               <View style={styles.listHeader}>
                 <Text style={[styles.listHeaderText, { textAlign: isRTL ? 'right' : 'left' }]}>
                   {language === 'ar' ? 'مراكز الإنقاذ القريبة' : 'Nearby Rescue Centers'}
@@ -307,7 +404,7 @@ const styles = StyleSheet.create({
   searchWrapper: {
     width: "100%",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingTop: 5,
   },
   searchContainer: {
     flexDirection: "row",
@@ -474,6 +571,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     gap: 12,
+    marginTop: 10
   },
   callNowButton: {
     flex: 1,

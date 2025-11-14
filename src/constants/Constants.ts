@@ -84,6 +84,13 @@ export const BOTTOMTABS = [
   },
   {
     key: 2,
+    title: "Promotions",
+    titleAr: "الترويجات",
+    navigateTo: SCREENS.NOTIFICATION,
+    image: require("../assets/images/promoIcon.png"),
+  },
+  {
+    key: 3,
     title: "Settings",
     titleAr: "الإعدادات",
     navigateTo: SCREENS.PROFILE,

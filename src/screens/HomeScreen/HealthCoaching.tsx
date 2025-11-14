@@ -125,12 +125,6 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.clinicName}>{item.name}</Text>
-        <Text style={styles.distance}>{item.distance}</Text>
-      </View>
-      
-      <View style={styles.infoRow}>
-        <StarIcon />
-        <Text style={styles.infoText}>{item.rating}</Text>
       </View>
       
       <View style={styles.infoRow}>
@@ -141,19 +135,6 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
       <View style={styles.infoRow}>
         <PhoneIcon />
         <Text style={styles.infoText}>{item.phone}</Text>
-      </View>
-      
-      <View style={styles.statusContainer}>
-        <View style={[
-          styles.statusBadge,
-          item.status === "Closed" ? styles.closedBadge : styles.openBadge
-        ]}>
-          {item.status === "Closed" ? <CloseIcon /> : <CheckIcon />}
-          <Text style={[
-            styles.statusText,
-            item.status === "Closed" ? styles.closedText : styles.openText
-          ]}>{item.status}</Text>
-        </View>
       </View>
       
       <View style={styles.petIconsContainer}>

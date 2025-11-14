@@ -37,14 +37,14 @@ const NotificatonList = (props: any) => {
       subTitle: "Your house cleaning service is placed successfully.",
     },
     {
-      id: 4,
+      id: 5,
       title: "Monthly Offer",
       image: IMAGES.no5,
       time:'03:20 PM',
       subTitle: "30% off on plumbing service untill 27th March.",
     },
     {
-      id: 4,
+      id: 6,
       title: "Order Canceled",
       image: IMAGES.no6,
       time:'11:30 PM',

@@ -11,6 +11,7 @@ import Privacy from "../screens/HomeScreen/Privacy";
 import ChangePassword from "../screens/HomeScreen/ChangePassword";
 import AddMood from "../screens/HomeScreen/AddMood";
 import OnBoarding from "../screens/AuthScreen/OnBoarding";
+import Notification from "../screens/HomeScreen/Notification";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ const AppNavigator = () => {
     >
       <Stack.Screen name={SCREENS.HOME} component={BottomTabNavigation} />
       <Stack.Screen name={SCREENS.FITNESS_DETAIL} component={FitnessDetail} />
+      <Stack.Screen name={SCREENS.NOTIFICATION} component={Notification} />
       <Stack.Screen name={SCREENS.EDIT_PROFILE} component={EditProfile} />
       <Stack.Screen name={SCREENS.CHANGE_PASS} component={ChangePassword} />
       <Stack.Screen name={SCREENS.PRIVACY} component={Privacy} />
@@ -54,6 +56,11 @@ const BottomTabNavigation = (props: any) => {
         name={SCREENS.FITNESS_DETAIL}
         component={FitnessDetail}
         initialParams={{ index: 1 }}
+      />
+      <Tab.Screen
+        name={SCREENS.NOTIFICATION}
+        component={Notification}
+        initialParams={{ index: 2 }}
       />
       <Tab.Screen name={SCREENS.PROFILE} component={Profile} />
     </Tab.Navigator>

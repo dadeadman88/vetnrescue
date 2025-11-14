@@ -15,7 +15,8 @@ const BottomTabs = (props: any) => {
   return (
     <View style={[styles.tabContainer]}>
       {BOTTOMTABS.map((i, index) => {
-        const isActive = i.key == props.state.index;
+        const activeRouteName = props.state?.routes[props.state?.index]?.name;
+        const isActive = i.navigateTo === activeRouteName;
         const displayTitle = language === 'ar' ? (i as any).titleAr || i.title : i.title;
         return (
           <TouchableOpacity

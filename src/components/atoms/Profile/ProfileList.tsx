@@ -1,5 +1,5 @@
-import React from "react";
-import { FlatList, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
+import { FlatList, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { Typography } from "../Typography";
 import { IMAGES, SCREENS, theme } from "../../../constants";
@@ -12,6 +12,8 @@ import { setLanguage } from "../../../redux/slices/OtherSlice";
 const ProfileList = () => {
   const dispatch = useDispatch();
   const language = useSelector((state: States) => state.Others.language);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   const DATA = [
     {
@@ -37,6 +39,13 @@ const ProfileList = () => {
       image: IMAGES.lang,
       params: { title: "Language" },
     },
+    {
+      id: 4,
+      title: "Country",
+      titleAr: "الدولة",
+      image: IMAGES.lang,
+      params: { title: "Country" },
+    }
   ];
 
   const _renderItem = ({ item }: any) => {
@@ -76,6 +85,65 @@ const ProfileList = () => {
               </View>
             </View>
           </View>
+          <View style={commonStyles.lineBar} />
+        </View>
+      );
+    }
+    else if(item.id === 4){
+      return (
+        <View>
+          <TouchableOpacity activeOpacity={0.5} onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
+            <View row marginV-20>
+              <Image
+                source={item.image}
+                style={{ width: 30, height: 30 }}
+                resizeMode="contain"
+              />
+              <View marginL-20 flex>
+                <View row spread>
+                  <Typography size={theme.fontSize.medium} style={{flex: 1}}>
+                    {displayTitle}
+                  </Typography>
+                  <Typography size={theme.fontSize.medium} style={{flex: 0.2}}>
+                    {selectedCountry || null}
+                  </Typography>
+                  <Image
+                    source={IMAGES.rightIcon}
+                    style={{ 
+                      width: 20, 
+                      height: 25, 
+                      resizeMode: 'contain',
+                      transform: [{ rotate: isDropdownOpen ? '270deg' : '90deg' }] 
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+          {isDropdownOpen && (
+            <View style={styles.dropdownContainer}>
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => {
+                  setSelectedCountry('UAE');
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <Typography size={theme.fontSize.medium}>United Arab Emirates</Typography>
+              </TouchableOpacity>
+              <View style={commonStyles.lineBar} />
+              <TouchableOpacity
+                style={styles.dropdownItem}
+                onPress={() => {
+                  setSelectedCountry('KSA');
+                  setIsDropdownOpen(false);
+                }}
+              >
+                <Typography size={theme.fontSize.medium}>Saudi Arabia</Typography>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View style={commonStyles.lineBar} />
         </View>
       );
     }
@@ -93,7 +161,9 @@ const ProfileList = () => {
                 <Typography size={theme.fontSize.medium}>{displayTitle}</Typography>
                 <Image
                   source={IMAGES.rightIcon}
-                  style={{ width: 15, height: 15 }}
+                  style={{  width: 20, 
+                    height: 25, 
+                    resizeMode: 'contain' }}
                 />
               </View>
             </View>
@@ -115,5 +185,20 @@ const ProfileList = () => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  dropdownContainer: {
+    backgroundColor: '#fff',
+    marginLeft: 10,
+    marginRight: 10,
+    borderRadius: 8,
+    paddingVertical: 8,
+    ...commonStyles.boxShadow,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+});
 
 export default ProfileList;
