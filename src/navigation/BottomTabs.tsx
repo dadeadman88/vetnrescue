@@ -1,16 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native-ui-lib";
 import { BOTTOMTABS, theme } from "../constants/Constants";
 import { navigate } from "./RootNavigation";
 import { StyleSheet, TouchableOpacity, Image } from "react-native";
-import { scale } from "react-native-size-matters";
-import { IMAGES, SCREENS } from "../constants";
 import { Typography } from "../components/atoms/Typography";
 import { useSelector } from "react-redux";
 import { States } from "../utils/types";
 
+import DeviceInfo from 'react-native-device-info';
+import { Platform } from 'react-native';
+
 const BottomTabs = (props: any) => {
   const language = useSelector((state: States) => state.Others.language);
+
+  const [hasSoftKeys, setHasSoftKeys] = useState(false);
+
+  useEffect(() => {
+    async function checkKeys() {
+      // Check if device has soft keys by checking if it has a notch
+      // Devices with notches typically don't have soft keys
+      if (Platform.OS === 'android') {
+        const hasNotch = await DeviceInfo.hasNotch();
+        // If device doesn't have a notch, it likely has soft keys
+        setHasSoftKeys(!hasNotch);
+      } else {
+        setHasSoftKeys(false);
+      }
+    }
+
+    checkKeys();
+  }, []);
   
   return (
     <View style={[styles.tabContainer]}>
@@ -21,8 +40,8 @@ const BottomTabs = (props: any) => {
         return (
           <TouchableOpacity
             key={index}
-            style={styles.tabView}
             onPress={() => navigate(i.navigateTo, { index: i.key })}
+            style={styles.tabView}
           >
             <Image
               source={i.image}
@@ -82,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 80,
+    marginBottom: 50
   },
   activeTabView: {
     alignItems: "center",
