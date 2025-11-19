@@ -19,24 +19,23 @@ const EditProfileData = () => {
   return (
     <View style={commonStyles.footerContainer}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <TouchableOpacity activeOpacity={0.8}><ProfileImg image="https://sugarplumnannies.com/wp-content/uploads/2015/11/dog-placeholder.jpg" /></TouchableOpacity>
         <InputText
           value={animalType}
-          placeholder={language === 'ar' ? "نوع الحيوان" : "Animal Type"}
+          placeholder={language === 'ar' ? "الاسم الأول" : "First Name"}
           onChangeText={(text: string) => setAnimalType(text)}
           style={{ textAlign: isRTL ? 'right' : 'left' }}
         />
         <InputText
           value={animalBreed}
-          placeholder={language === 'ar' ? "سلالة الحيوان" : "Animal Breed"}
+          placeholder={language === 'ar' ? "اسم العائلة" : "Last Name"}
           style={{ marginTop: -10, textAlign: isRTL ? 'right' : 'left' }}
           onChangeText={(text: string) => setAnimalBreed(text)}
         />
         <InputText
           value={description}
-          placeholder={language === 'ar' ? "الوصف" : "Description"}
+          placeholder={language === 'ar' ? "رسالة" : "Message"}
           multiline={true}
-          style={{ marginTop: -10, height: 150, textAlign: isRTL ? 'right' : 'left' }}
+          style={{ paddingTop: 10, marginTop: -10, height: 150, textAlign: isRTL ? 'right' : 'left' }}
           onChangeText={(text: string) => setDescription(text)}
         />
 

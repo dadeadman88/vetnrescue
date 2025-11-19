@@ -100,8 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    height: 80,
-    marginBottom: 50
+    height: 80
   },
   activeTabView: {
     alignItems: "center",

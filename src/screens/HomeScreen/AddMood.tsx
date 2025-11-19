@@ -11,18 +11,22 @@ import { onBack } from "../../navigation/RootNavigation";
 interface AddMoodProps {}
 
 const cities = [
-  { id: '1', name: 'Dubai', country: 'UAE' },
-  { id: '2', name: 'Abu Dhabi', country: 'UAE' },
-  { id: '3', name: 'Sharjah', country: 'UAE' },
-  { id: '4', name: 'Riyadh', country: 'Saudi Arabia' },
-  { id: '5', name: 'Jeddah', country: 'Saudi Arabia' },
-  { id: '6', name: 'Mecca', country: 'Saudi Arabia' },
-  { id: '7', name: 'Medina', country: 'Saudi Arabia' },
-  { id: '8', name: 'Dammam', country: 'Saudi Arabia' },
-  { id: '9', name: 'Al Ain', country: 'UAE' },
-  { id: '10', name: 'Khobar', country: 'Saudi Arabia' },
-  { id: '11', name: 'Taif', country: 'Saudi Arabia' },
-  { id: '12', name: 'Ras Al Khaimah', country: 'UAE' },
+  { id: '1', name: 'Downtown Dubai', country: 'UAE' },
+  { id: '2', name: 'Dubai Marina', country: 'UAE' },
+  { id: '3', name: 'JBR - Jumeirah Beach Residence', country: 'UAE' },
+  { id: '4', name: 'Business Bay', country: 'UAE' },
+  { id: '5', name: 'Palm Jumeirah', country: 'UAE' },
+  { id: '6', name: 'Corniche Area', country: 'UAE' },
+  { id: '7', name: 'Yas Island', country: 'UAE' },
+  { id: '8', name: 'Al Reem Island', country: 'UAE' },
+  { id: '9', name: 'Al Khalidiyah', country: 'UAE' },
+  { id: '10', name: 'Al Majaz', country: 'UAE' },
+  { id: '11', name: 'Al Qasimia', country: 'UAE' },
+  { id: '12', name: 'Al Nahda', country: 'UAE' },
+  { id: '13', name: 'Al Jimi', country: 'UAE' },
+  { id: '14', name: 'Al Ain City Center', country: 'UAE' },
+  { id: '15', name: 'Al Marjan Island', country: 'UAE' },
+  { id: '16', name: 'Al Hamra', country: 'UAE' },
 ];
 
 const CityItem = ({ item }: { item: typeof cities[0] }) => {

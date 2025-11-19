@@ -25,10 +25,12 @@ export function popToTop() {
 }
 
 export function reset(name:any) {
-  navigationRef.current?.dispatch(
-    CommonActions.reset({
-      index: 0,
-      routes: [{name}],
-    }),
-  );
+  if (navigationRef.isReady()) {
+    navigationRef.current?.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name}],
+      }),
+    );
+  }
 }

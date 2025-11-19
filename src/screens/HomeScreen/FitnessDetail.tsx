@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList } from "react-native";
+import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList, Linking } from "react-native";
 import { View } from "react-native-ui-lib";
 import { IMAGES, theme, SCREENS } from "../../constants";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector } from "react-redux";
 import { States } from "../../utils/types";
+import { onBack } from "../../navigation/RootNavigation";
+import Swiper from "react-native-swiper";
 
 const SearchIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -17,12 +19,6 @@ const SearchIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-  </Svg>
-);
-
-const StarIcon = () => (
-  <Svg width="16" height="16" viewBox="0 0 24 24" fill="#F9C801">
-    <Path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
   </Svg>
 );
 
@@ -44,26 +40,11 @@ const PhoneIcon = () => (
   </Svg>
 );
 
-const CheckIcon = () => (
-  <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+const CallIcon = () => (
+  <Svg width="16" height="16" viewBox="0 0 122.88 122.27">
     <Path
-      d="M20 6L9 17L4 12"
-      stroke="#4BB329"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </Svg>
-);
-
-const CloseIcon = () => (
-  <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <Path
-      d="M18 6L6 18M6 6L18 18"
-      stroke="#FF0000"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M33.84,50.25c4.13,7.45,8.89,14.6,15.07,21.12c6.2,6.56,13.91,12.53,23.89,17.63c0.74,0.36,1.44,0.36,2.07,0.11 c0.95-0.36,1.92-1.15,2.87-2.1c0.74-0.74,1.66-1.92,2.62-3.21c3.84-5.05,8.59-11.32,15.3-8.18c0.15,0.07,0.26,0.15,0.41,0.21 l22.38,12.87c0.07,0.04,0.15,0.11,0.21,0.15c2.95,2.03,4.17,5.16,4.2,8.71c0,3.61-1.33,7.67-3.28,11.1 c-2.58,4.53-6.38,7.53-10.76,9.51c-4.17,1.92-8.81,2.95-13.27,3.61c-7,1.03-13.56,0.37-20.27-1.69 c-6.56-2.03-13.17-5.38-20.39-9.84l-0.53-0.34c-3.31-2.07-6.89-4.28-10.4-6.89C31.12,93.32,18.03,79.31,9.5,63.89 C2.35,50.95-1.55,36.98,0.58,23.67c1.18-7.3,4.31-13.94,9.77-18.32c4.76-3.84,11.17-5.94,19.47-5.2c0.95,0.07,1.8,0.62,2.25,1.44 l14.35,24.26c2.1,2.72,2.36,5.42,1.21,8.12c-0.95,2.21-2.87,4.25-5.49,6.15c-0.77,0.66-1.69,1.33-2.66,2.03 c-3.21,2.33-6.86,5.02-5.61,8.18L33.84,50.25L33.84,50.25L33.84,50.25z"
+      fill="#000"
     />
   </Svg>
 );
@@ -139,7 +120,41 @@ const clinicData = [
   },
 ];
 
+const vetData = [
+  {
+    id: '1',
+    name: 'Pet Care Veterinary Clinic',
+    distance: '1.2 mi',
+    rating: '4.5',
+    address: '456 Oak Avenue, Midtown',
+    phone: '+1 (555) 234-5678',
+    status: 'Open Now',
+    pets: ['🐕', '🐈', '🐢']
+  },
+  {
+    id: '2',
+    name: 'Animal Hospital & Care',
+    distance: '2.5 mi',
+    rating: '4.8',
+    address: '789 Pine Street, Downtown',
+    phone: '+1 (555) 345-6789',
+    status: 'Open Now',
+    pets: ['🐕', '🐈', '🐦']
+  },
+  {
+    id: '3',
+    name: 'Comprehensive Pet Health',
+    distance: '3.1 mi',
+    rating: '4.3',
+    address: '321 Elm Road, Uptown',
+    phone: '+1 (555) 456-7890',
+    status: 'Closed',
+    pets: ['🐕', '🐈', '🐢', '🐠']
+  },
+];
+
 const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 'en' | 'ar' }) => {
+  
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -152,7 +167,7 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
       </View>
       
       <View style={styles.infoRow}>
-        <PhoneIcon />
+        <CallIcon />
         <Text style={styles.infoText}>{item.phone}</Text>
       </View>
       
@@ -197,12 +212,49 @@ const ReportPetCard = ({ language }: { language: 'en' | 'ar' }) => {
   );
 };
 
+const adData: any[] = [
+  {
+    id: '1',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
+    url: 'https://www.happypaws.ae/',
+  },
+  {
+    id: '2',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
+    url: 'https://www.happypaws.ae/',
+  },
+  {
+    id: '3',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
+    url: 'https://www.happypaws.ae/',
+  },
+];
+
 const FitnessDetail = () => {
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("All Pets");
   const language = useSelector((state: States) => state.Others.language);
   const isRTL = language === 'ar';
+  const requestType: "vet" | "rescue" = route?.params?.type ?? "rescue";
+  const listHeading =
+    requestType === "vet"
+      ? language === "ar"
+        ? "العيادات البيطرية القريبة"
+        : "Nearby Vet Clinics"
+      : language === "ar"
+        ? "مراكز الإنقاذ القريبة"
+        : "Nearby Rescue Centers";
+  const listData = requestType === "vet" ? vetData : clinicData;
+  const searchPlaceholder =
+    requestType === "vet"
+      ? language === "ar"
+        ? "البحث عن العيادات البيطرية..."
+        : "Search for vet clinics..."
+      : language === "ar"
+        ? "البحث عن مراكز الإنقاذ..."
+        : "Search for rescue centers...";
 
   useEffect(() => {
 
@@ -213,14 +265,20 @@ const FitnessDetail = () => {
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
           <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              source={IMAGES.backButton}
+              style={{ width: 30, height: 30, }}
+            />
+          </TouchableOpacity>
             <View style={styles.logoContainer}>
               <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
             </View>
             <TouchableOpacity 
               style={styles.notificationButton}
-              onPress={() => navigation.navigate(SCREENS.ADD_MOOD)}
+              onPress={() => navigation.navigate(SCREENS.PROFILE)}
             >
-              <Image source={IMAGES.filterLocation} style={styles.notificationImage} resizeMode="contain" />
+              <Image source={IMAGES.settings} style={styles.notificationImage} resizeMode="contain" />
             </TouchableOpacity>
           </View>
           
@@ -231,127 +289,49 @@ const FitnessDetail = () => {
               </RNView>
               <TextInput
                 style={[styles.searchInput, { textAlign: isRTL ? 'right' : 'left' }]}
-                placeholder={language === 'ar' ? "البحث عن مراكز الإنقاذ..." : "Search for rescue centers..."}
+                placeholder={searchPlaceholder}
                 placeholderTextColor={theme.color.tgray}
                 value={searchText}
                 onChangeText={setSearchText}
               />
+              <TouchableOpacity 
+                style={styles.notificationButton}
+                onPress={() => navigation.navigate(SCREENS.ADD_MOOD)}
+              >
+                <Image source={IMAGES.filterLocation} style={styles.notificationImage} resizeMode="contain" />
+            </TouchableOpacity>
             </View>
           </View>
-
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.tabsScrollView}
-            contentContainerStyle={styles.tabsContainer}
-          >
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "All Pets" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("All Pets")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "All Pets" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'جميع الحيوانات' : 'All Pets'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "Cats" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("Cats")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "Cats" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'القطط' : 'Cats'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "Dogs" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("Dogs")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "Dogs" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'الكلاب' : 'Dogs'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "Birds" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("Birds")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "Birds" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'الطيور' : 'Birds'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "Fish" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("Fish")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "Fish" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'الأسماك' : 'Fish'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                activeTab === "Turtles" && styles.activeTab,
-                { 
-                  paddingVertical: language === 'ar' ? 5 : 12,
-                  paddingHorizontal: language === 'ar' ? 30 : 20 
-                },
-              ]}
-              onPress={() => setActiveTab("Turtles")}
-            >
-              <RNView style={styles.tabTextContainer}>
-                <Text style={[styles.tabLabel, activeTab === "Turtles" && styles.activeTabLabel]}>
-                  {language === 'ar' ? 'السلاحف' : 'Turtles'}
-                </Text>
-              </RNView>
-            </TouchableOpacity>
-          </ScrollView>
         </View>
+
+          <View style={styles.swiperContainer}>
+            <Swiper
+              showsButtons={false}
+              showsPagination={true}
+              loop={true}
+              autoplay={true}
+              autoplayTimeout={3}
+              style={styles.swiper}
+            >
+              {adData.map((ad) => (
+                <TouchableOpacity
+                  key={ad.id}
+                  activeOpacity={0.8}
+                  onPress={() => ad.url && Linking.openURL(ad.url)}
+                  style={styles.adSlide}
+                >
+                  <Image
+                    source={{ uri: ad.imageUrl }}
+                    style={styles.adImage}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              ))}
+            </Swiper>
+          </View>
         
         <FlatList
-          data={clinicData}
+          data={listData}
           renderItem={({ item }) => <ClinicCard item={item} language={language} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
@@ -361,7 +341,7 @@ const FitnessDetail = () => {
             <>
               <View style={styles.listHeader}>
                 <Text style={[styles.listHeaderText, { textAlign: isRTL ? 'right' : 'left' }]}>
-                  {language === 'ar' ? 'مراكز الإنقاذ القريبة' : 'Nearby Rescue Centers'}
+                  {listHeading}
                 </Text>
               </View>
             </>
@@ -389,6 +369,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
   },
   logoImage: {
     width: "50%",
@@ -400,6 +382,7 @@ const styles = StyleSheet.create({
   notificationImage: {
     width: 25,
     height: 25,
+    tintColor: "#47a2ab"
   },
   searchWrapper: {
     width: "100%",
@@ -433,6 +416,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.color.black,
     fontFamily: theme.font.regular,
+  },
+  swiperContainer: {
+    width: "100%",
+    height: 200,
+    paddingVertical: 20,
+  },
+  swiper: {},
+  adSlide: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  adImage: {
+    width: "100%",
+    height: 160,
+    borderRadius: 16,
   },
   tabsScrollView: {
     width: "100%",

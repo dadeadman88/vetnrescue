@@ -3,7 +3,7 @@ import OnBoardingTamplet from "../../components/templates/OnBoardingTamplet";
 
 const OnBoarding = () => {
   return (
-  <OnBoardingTamplet />
+   <OnBoardingTamplet />
   );
 };
 

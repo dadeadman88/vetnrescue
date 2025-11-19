@@ -16,7 +16,7 @@ const EditProfile = () => {
   return (
     <SafeAreaContainer safeArea={false}>
       <View marginH-20 marginV-10>
-        <DrawerTitle title={language === 'ar' ? "الإبلاغ عن حيوان ضال" : "Report Stray Animal"} />
+        <DrawerTitle title={language === 'ar' ? "الإعلانات" : "Advertisements"} />
       </View>
       <EditProfileData />
       

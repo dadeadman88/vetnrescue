@@ -9,7 +9,6 @@ import Animated, { SlideInUp } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { LoginUser } from "../../redux/slices/AuthSlice";
 import { States } from "../../utils/types";
-import { navigate } from "../../navigation/RootNavigation";
 
 const OnBoardingTamplet = () => {
   const dispatch = useDispatch();
@@ -19,13 +18,11 @@ const OnBoardingTamplet = () => {
     setTimeout(() => {
       if (!isLoggedIn) {
         // Set isLoggedIn to true to navigate to dashboard without saving data
+        // AppNavigator will automatically show EXERCISE as initial route
         dispatch(LoginUser({
           id: '1',
           access_token: 'dummy-token'
         }));
-      } else {
-        // If already logged in, just navigate to home
-        navigate(SCREENS.HOME);
       }
     }, 5000);
   }, [isLoggedIn]);

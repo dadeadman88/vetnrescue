@@ -41,7 +41,7 @@ export const theme = {
     extraLarge: 28,
   },
   color: {
-    primary: "#67AE6E",
+    primary: "#5FBE3A",
     primarybeta: "#67AE6E",
     secondry: "#6969691A",
     cyan: "#9DE5FF",

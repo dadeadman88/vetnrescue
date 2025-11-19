@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { FlatList, TouchableOpacity, Image, StyleSheet, ScrollView } from "react-native";
 import { View } from "react-native-ui-lib";
 import { Typography } from "../Typography";
 import { IMAGES, SCREENS, theme } from "../../../constants";
@@ -14,6 +14,8 @@ const ProfileList = () => {
   const language = useSelector((state: States) => state.Others.language);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [isStatesDropdownOpen, setIsStatesDropdownOpen] = useState(false);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
 
   const DATA = [
     {
@@ -45,6 +47,13 @@ const ProfileList = () => {
       titleAr: "الدولة",
       image: IMAGES.lang,
       params: { title: "Country" },
+    },
+    {
+      id: 5,
+      title: "State",
+      titleAr: "الولاية",
+      image: IMAGES.lang,
+      params: { title: "State" },
     }
   ];
 
@@ -91,8 +100,13 @@ const ProfileList = () => {
     }
     else if(item.id === 4){
       return (
-        <View>
-          <TouchableOpacity activeOpacity={0.5} onPress={() => setIsDropdownOpen(!isDropdownOpen)}>
+        <View style={{ position: 'relative' }}>
+          <TouchableOpacity activeOpacity={0.5} onPress={() => {
+            setIsDropdownOpen(!isDropdownOpen);
+            if (!isDropdownOpen) {
+              setIsStatesDropdownOpen(false);
+            }
+          }}>
             <View row marginV-20>
               <Image
                 source={item.image}
@@ -122,25 +136,112 @@ const ProfileList = () => {
           </TouchableOpacity>
           {isDropdownOpen && (
             <View style={styles.dropdownContainer}>
-              <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setSelectedCountry('UAE');
-                  setIsDropdownOpen(false);
-                }}
-              >
-                <Typography size={theme.fontSize.medium}>United Arab Emirates</Typography>
-              </TouchableOpacity>
-              <View style={commonStyles.lineBar} />
-              <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setSelectedCountry('KSA');
-                  setIsDropdownOpen(false);
-                }}
-              >
-                <Typography size={theme.fontSize.medium}>Saudi Arabia</Typography>
-              </TouchableOpacity>
+              <ScrollView style={styles.dropdownScrollView} nestedScrollEnabled>
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedCountry('UAE');
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>United Arab Emirates</Typography>
+                </TouchableOpacity>
+                <View style={commonStyles.lineBar} />
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedCountry('KSA');
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>Saudi Arabia</Typography>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          )}
+          <View style={commonStyles.lineBar} />
+        </View>
+      );
+    }
+    else if(item.id === 5){
+      return (
+        <View style={{ position: 'relative' }}>
+          <TouchableOpacity activeOpacity={0.5} onPress={() => {
+            setIsStatesDropdownOpen(!isStatesDropdownOpen);
+            if (!isStatesDropdownOpen) {
+              setIsDropdownOpen(false);
+            }
+          }}>
+            <View row marginV-20>
+              <Image
+                source={item.image}
+                style={{ width: 30, height: 30 }}
+                resizeMode="contain"
+              />
+              <View marginL-20 flex>
+                <View row spread>
+                  <Typography size={theme.fontSize.medium} style={{flex: 1}}>
+                    {displayTitle}
+                  </Typography>
+                  <Typography size={theme.fontSize.medium} style={{flex: 0.4}}>
+                    {selectedState || null}
+                  </Typography>
+                  <Image
+                    source={IMAGES.rightIcon}
+                    style={{ 
+                      width: 20, 
+                      height: 25, 
+                      resizeMode: 'contain',
+                      transform: [{ rotate: isStatesDropdownOpen ? '270deg' : '90deg' }] 
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+          {isStatesDropdownOpen && (
+            <View style={styles.dropdownContainer}>
+              <ScrollView style={styles.dropdownScrollView} nestedScrollEnabled>
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedState('Dubai');
+                    setIsStatesDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>Dubai</Typography>
+                </TouchableOpacity>
+                <View style={commonStyles.lineBar} />
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedState('Abu Dhabi');
+                    setIsStatesDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>Abu Dhabi</Typography>
+                </TouchableOpacity>
+                <View style={commonStyles.lineBar} />
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedState('Riyadh');
+                    setIsStatesDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>Riyadh</Typography>
+                </TouchableOpacity>
+                <View style={commonStyles.lineBar} />
+                <TouchableOpacity
+                  style={styles.dropdownItem}
+                  onPress={() => {
+                    setSelectedState('Jeddah');
+                    setIsStatesDropdownOpen(false);
+                  }}
+                >
+                  <Typography size={theme.fontSize.medium}>Jeddah</Typography>
+                </TouchableOpacity>
+              </ScrollView>
             </View>
           )}
           <View style={commonStyles.lineBar} />
@@ -188,12 +289,18 @@ const ProfileList = () => {
 
 const styles = StyleSheet.create({
   dropdownContainer: {
+    position: 'absolute',
+    top: '100%',
+    left: 10,
+    right: 10,
     backgroundColor: '#fff',
-    marginLeft: 10,
-    marginRight: 10,
     borderRadius: 8,
-    paddingVertical: 8,
+    maxHeight: 200,
+    zIndex: 1000,
     ...commonStyles.boxShadow,
+  },
+  dropdownScrollView: {
+    maxHeight: 200,
   },
   dropdownItem: {
     paddingVertical: 12,

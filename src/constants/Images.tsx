@@ -15,6 +15,7 @@ export const IMAGES = {
   arToEng: require("../assets/images/arToEng.png"),
   engToAr: require("../assets/images/engToAr.png"),
   lang: require("../assets/images/lang.png"),
+  settings: require("../assets/images/account.png"),
 
   // Home Images
   homeHeaderImg: require("../assets/images/homeHeaderImg.png"),

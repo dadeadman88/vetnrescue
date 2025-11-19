@@ -1,43 +1,152 @@
 import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import HeaderHome from "../../atoms/HomeAtoms/HeaderHome";
-import Fitness from "../../atoms/HomeAtoms/Fitness";
-import Nutrition from "../../atoms/HomeAtoms/Nutrition";
-import { theme } from "../../../constants";
-import HealthCoachingHome from "../../atoms/HomeAtoms/HealthCoachingHome";
+import { Image, ImageBackground, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
+import { IMAGES, SCREENS, theme } from "../../../constants";
 import { View } from "react-native-ui-lib";
-import { useDispatch } from "react-redux";
-import { MainActions } from "../../../redux/actions/MainActions";
+import { Typography } from "../../atoms/Typography";
+import { useSelector } from "react-redux";
+import { States } from "../../../utils/types";
+import { navigate } from "../../../navigation/RootNavigation";
 
 const HomeScreen = () => {
+  const language = useSelector((state: States) => state.Others.language);
 
-  const dispatch = useDispatch();
+  const HomeTabs = [
+    {
+      key: 0,
+      title: "Vet Finder",
+      titleAr: "البحث عن الطبيب البيطري",
+      navigateTo: SCREENS.HEALTH_COACHING,
+      image: require("../../../assets/images/petFinder.png"),
+    },
+    {
+      key: 1,
+      title: "Rescue Services",
+      titleAr: "خدمات الإنقاذ",
+      navigateTo: SCREENS.FITNESS_DETAIL,
+      image: require("../../../assets/images/rescueIcon.png"),
+    },
+    {
+      key: 2,
+      title: "Advertisements",
+      titleAr: "الإعلانات",
+      navigateTo: SCREENS.EDIT_PROFILE,
+      image: require("../../../assets/images/promoIcon.png"),
+    }
+  ];
 
   useEffect(() => {
-    getData();
+
   }, [])
 
-  const getData = async () => {
-    await dispatch(MainActions.GetAllCategoryData()).then((v) => {
-      let status = v.meta.requestStatus;
-      if (status == "fulfilled") {
-
-      }
-    });
-  }
-
   return (
-    <>
-      <HealthCoachingHome />
-      <Nutrition />
-      <View absH style={{ top: "25%", left: 0, right: 0,borderBottomLeftRadius:1000,borderTopRightRadius:1000 }}>
-        <Fitness />
+      <View style={{ flex: 1, backgroundColor: "#FFF"}}>
+          <View style={styles.headerWrapper}>
+            <View style={styles.headerRow}>
+              <View style={styles.logoContainer}>
+                <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
+              </View>
+            </View>
+          </View>
+
+          <ImageBackground source={require("../../../assets/images/buttonBg01.png")} style={styles.imageBackground} resizeMode="cover">
+              <TouchableOpacity 
+                onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "vet" })}
+                style={{ alignItems: "center", justifyContent: "center" }}
+              >
+                <Image
+                  source={HomeTabs[0].image}
+                  style={{
+                    marginVertical: 5,
+                    width: 50,
+                    height: 50,
+                    tintColor: "#5FBE3A"
+                  }}
+                  resizeMode="contain"
+                />
+                <Typography color={theme.color.primary} size={theme.fontSize.large} align="center">
+                    {language === 'ar' ? HomeTabs[0].titleAr : HomeTabs[0].title}
+                </Typography>
+              </TouchableOpacity>
+          </ImageBackground>
+
+          <ImageBackground source={require("../../../assets/images/buttonBg02.png")} style={styles.imageBackground} resizeMode="cover">
+              <TouchableOpacity 
+                onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "rescue" })}
+                style={styles.buttonContainer}
+              >
+                <Image
+                  source={HomeTabs[1].image}
+                  style={{
+                    marginVertical: 5,
+                    width: 50,
+                    height: 50,
+                    tintColor: "#5FBE3A"
+                  }}
+                  resizeMode="contain"
+                />
+                <Typography color={theme.color.primary} size={theme.fontSize.large} align="center">
+                    {language === 'ar' ? HomeTabs[1].titleAr : HomeTabs[1].title}
+                </Typography>
+              </TouchableOpacity>
+          </ImageBackground>
+          
+          <ImageBackground source={require("../../../assets/images/buttonBg03.png")} style={styles.imageBackground} resizeMode="cover">
+              <TouchableOpacity 
+                onPress={() => navigate(SCREENS.EDIT_PROFILE)}
+                style={{ alignItems: "center", justifyContent: "center" }}
+              >
+                <Image
+                  source={HomeTabs[2].image}
+                  style={{
+                    marginVertical: 5,
+                    width: 50,
+                    height: 50,
+                    tintColor: "#5FBE3A"
+                  }}
+                  resizeMode="contain"
+                />
+                <Typography color={theme.color.primary} size={theme.fontSize.large} align="center">
+                    {language === 'ar' ? HomeTabs[2].titleAr : HomeTabs[2].title}
+                </Typography>
+              </TouchableOpacity>
+          </ImageBackground>
+
       </View>
-      <HeaderHome color={theme.color.white} headerBkColor={"rgba(0,0,0,0)"} abs />
-    </>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  headerWrapper: {
+    width: "100%"
+  },
+  headerRow: {
+    width: "100%",
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingTop: 50
+  },
+  logoImage: {
+    width: "50%",
+    height: 70,
+  },
+  imageBackground: {
+    height: Dimensions.get('window').height * 0.23, // 25vh equivalent
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom:20
+  },
+  buttonContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%"
+  }
+});
 
 export default HomeScreen;
