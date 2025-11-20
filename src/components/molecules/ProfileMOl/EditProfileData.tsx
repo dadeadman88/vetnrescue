@@ -15,6 +15,7 @@ const EditProfileData = () => {
   const [animalType, setAnimalType] = useState("");
   const [animalBreed, setAnimalBreed] = useState("");
   const [description, setDescription] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   return (
     <View style={commonStyles.footerContainer}>
@@ -32,10 +33,23 @@ const EditProfileData = () => {
           onChangeText={(text: string) => setAnimalBreed(text)}
         />
         <InputText
+          value={phoneNumber}
+          placeholder={language === 'ar' ? "رقم الهاتف" : "Phone Number"}
+          style={{ marginTop: -10, textAlign: isRTL ? 'right' : 'left' }}
+          onChangeText={(text: string) => setPhoneNumber(text)}
+          keyboardType="phone-pad"
+        />
+        <InputText
           value={description}
           placeholder={language === 'ar' ? "رسالة" : "Message"}
           multiline={true}
-          style={{ paddingTop: 10, marginTop: -10, height: 150, textAlign: isRTL ? 'right' : 'left' }}
+          style={{
+            paddingTop: 10,
+            marginTop: -10,
+            height: 150,
+            textAlign: isRTL ? 'right' : 'left',
+            textAlignVertical: 'top',
+          }}
           onChangeText={(text: string) => setDescription(text)}
         />
 

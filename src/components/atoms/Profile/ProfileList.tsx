@@ -71,7 +71,7 @@ const ProfileList = () => {
               />
             <View marginL-20 flex>
               <View row spread>
-                <Typography size={theme.fontSize.medium}>{displayTitle}</Typography>
+                <Typography style={styles.title} size={theme.fontSize.medium}>{displayTitle}</Typography>
                 <TouchableOpacity 
                   activeOpacity={0.9} 
                   onPress={() => {
@@ -115,10 +115,10 @@ const ProfileList = () => {
               />
               <View marginL-20 flex>
                 <View row spread>
-                  <Typography size={theme.fontSize.medium} style={{flex: 1}}>
+                  <Typography size={theme.fontSize.medium} style={{flex: 1, paddingTop: 2}}>
                     {displayTitle}
                   </Typography>
-                  <Typography size={theme.fontSize.medium} style={{flex: 0.2}}>
+                  <Typography size={theme.fontSize.medium} style={{flex: 0.2, paddingTop: 2}}>
                     {selectedCountry || null}
                   </Typography>
                   <Image
@@ -180,7 +180,7 @@ const ProfileList = () => {
               />
               <View marginL-20 flex>
                 <View row spread>
-                  <Typography size={theme.fontSize.medium} style={{flex: 1}}>
+                  <Typography size={theme.fontSize.medium} style={{flex: 1, paddingTop: 2}}>
                     {displayTitle}
                   </Typography>
                   <Typography size={theme.fontSize.medium} style={{flex: 0.4}}>
@@ -259,7 +259,7 @@ const ProfileList = () => {
             />
             <View marginL-20 flex>
               <View row spread>
-                <Typography size={theme.fontSize.medium}>{displayTitle}</Typography>
+                <Typography style={styles.title} size={theme.fontSize.medium}>{displayTitle}</Typography>
                 <Image
                   source={IMAGES.rightIcon}
                   style={{  width: 20, 
@@ -305,6 +305,9 @@ const styles = StyleSheet.create({
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
+  },
+  title: {
+    paddingTop: 3
   },
 });
 
