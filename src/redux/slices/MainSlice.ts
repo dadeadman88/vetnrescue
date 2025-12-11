@@ -2,12 +2,41 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Main } from "../../utils/types";
 import { MainActions } from "../actions/MainActions";
 
-const initialState: any = {
+const initialState: Main = {
   categoryData: [],
   AllCategoryData: [],
   ExcerciseCategories: [],
-  Diets: {},
-  Moods: {},
+  Diets: {
+    data: [],
+    pagination: {
+      total: null,
+      current: null,
+      first: null,
+      last: null,
+      previous: null,
+      next: null,
+      pages: null,
+      from: null,
+      to: null,
+    },
+  },
+  Moods: {
+    data: [],
+    pagination: {
+      total: null,
+      current: null,
+      first: null,
+      last: null,
+      previous: null,
+      next: null,
+      pages: null,
+      from: null,
+      to: null,
+    },
+  },
+  Countries: [],
+  States: [],
+  Cities: [],
 };
 
 const MainSlice = createSlice({
@@ -59,6 +88,18 @@ const MainSlice = createSlice({
           data: [...state.Moods?.data, ...action.payload.data],
         };
       }
+    });
+    builder.addCase(MainActions.GetCountries.fulfilled, (state, action) => {
+      state.Countries = action.payload;
+    });
+    builder.addCase(MainActions.GetStates.fulfilled, (state, action) => {
+      state.States = action.payload;
+    });
+    builder.addCase(MainActions.GetCities.fulfilled, (state, action) => {
+      state.Cities = action.payload;
+    });
+    builder.addCase(MainActions.GetCitiesByCountry.fulfilled, (state, action) => {
+      state.Cities = action.payload;
     });
   },
 });

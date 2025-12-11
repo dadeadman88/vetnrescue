@@ -88,4 +88,94 @@ export const MainActions = {
       return apiCall.data?.response?.data;
     }
   ),
+  GetCountries: createAsyncThunk(
+    "main/GetCountries",
+    async (data, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      let apiCall = await client.get(endpoints.GetCountries);
+      thunkApi.dispatch(setLoading(false));
+      return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+    }
+  ),
+  GetStates: createAsyncThunk(
+    "main/GetStates",
+    async ({ countryCode }: { countryCode: string }, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      try {
+        let apiCall = await client.get(endpoints.GetStates(countryCode));
+        thunkApi.dispatch(setLoading(false));
+        // Check if API returned an error response
+        if (apiCall.data?.success === false) {
+          return { error: true, message: apiCall.data?.message || "No states found for this country" };
+        }
+        return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+      } catch (error: any) {
+        thunkApi.dispatch(setLoading(false));
+        // Handle error response
+        if (error?.response?.data?.success === false) {
+          return { error: true, message: error.response.data?.message || "No states found for this country" };
+        }
+        throw error;
+      }
+    }
+  ),
+  GetCities: createAsyncThunk(
+    "main/GetCities",
+    async ({ stateCode }: { stateCode: string }, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      try {
+        let apiCall = await client.get(endpoints.GetCities(stateCode));
+        thunkApi.dispatch(setLoading(false));
+        // Check if API returned an error response
+        if (apiCall.data?.success === false) {
+          return { error: true, message: apiCall.data?.message || "No cities found for this state" };
+        }
+        return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+      } catch (error: any) {
+        thunkApi.dispatch(setLoading(false));
+        // Handle error response
+        if (error?.response?.data?.success === false) {
+          return { error: true, message: error.response.data?.message || "No cities found for this state" };
+        }
+        throw error;
+      }
+    }
+  ),
+  GetCitiesByCountry: createAsyncThunk(
+    "main/GetCitiesByCountry",
+    async ({ countryId }: { countryId: string | number }, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      try {
+        let apiCall = await client.get(endpoints.GetCitiesByCountry(countryId));
+        thunkApi.dispatch(setLoading(false));
+        // Check if API returned an error response
+        if (apiCall.data?.success === false) {
+          return { error: true, message: apiCall.data?.message || "No cities found for this country" };
+        }
+        return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+      } catch (error: any) {
+        thunkApi.dispatch(setLoading(false));
+        // Handle error response
+        if (error?.response?.data?.success === false) {
+          return { error: true, message: error.response.data?.message || "No cities found for this country" };
+        }
+        throw error;
+      }
+    }
+  ),
+  GetVetClinics: createAsyncThunk(
+    "main/GetVetClinics",
+    async ({ cityId }: { cityId?: string | null } = {}, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      try {
+        let apiCall = await client.get(endpoints.GetVetClinics(cityId));
+        thunkApi.dispatch(setLoading(false));
+        // Try different response structures
+        return apiCall.data?.response?.data || apiCall.data?.response || apiCall.data?.data || apiCall.data;
+      } catch (error: any) {
+        thunkApi.dispatch(setLoading(false));
+        throw error;
+      }
+    }
+  ),
 };

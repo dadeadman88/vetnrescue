@@ -1,58 +1,104 @@
 import * as React from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import HeaderHome from "../../components/atoms/HomeAtoms/HeaderHome";
 import { theme } from "../../constants";
-import DrawerTitle from "../../components/atoms/DrawerTitle";
-import { DateTimePicker, Text, ToastPresets, View } from "react-native-ui-lib";
-import { Image, ScrollView, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { View } from "react-native-ui-lib";
+import { TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { Typography } from "../../components/atoms/Typography";
 import { onBack } from "../../navigation/RootNavigation";
+import { useDispatch, useSelector } from "react-redux";
+import { States } from "../../utils/types";
+import { useFocusEffect } from "@react-navigation/native";
+import { MainActions } from "../../redux/actions/MainActions";
+import { AppDispatch } from "../../redux/store";
 
 interface AddMoodProps {}
 
-const cities = [
-  { id: '1', name: 'Downtown Dubai', country: 'UAE' },
-  { id: '2', name: 'Dubai Marina', country: 'UAE' },
-  { id: '3', name: 'JBR - Jumeirah Beach Residence', country: 'UAE' },
-  { id: '4', name: 'Business Bay', country: 'UAE' },
-  { id: '5', name: 'Palm Jumeirah', country: 'UAE' },
-  { id: '6', name: 'Corniche Area', country: 'UAE' },
-  { id: '7', name: 'Yas Island', country: 'UAE' },
-  { id: '8', name: 'Al Reem Island', country: 'UAE' },
-  { id: '9', name: 'Al Khalidiyah', country: 'UAE' },
-  { id: '10', name: 'Al Majaz', country: 'UAE' },
-  { id: '11', name: 'Al Qasimia', country: 'UAE' },
-  { id: '12', name: 'Al Nahda', country: 'UAE' },
-  { id: '13', name: 'Al Jimi', country: 'UAE' },
-  { id: '14', name: 'Al Ain City Center', country: 'UAE' },
-  { id: '15', name: 'Al Marjan Island', country: 'UAE' },
-  { id: '16', name: 'Al Hamra', country: 'UAE' },
-];
-
-const CityItem = ({ item }: { item: typeof cities[0] }) => {
+const CityItem = ({ item }: { item: any }) => {
   return (
     <TouchableOpacity style={styles.cityItem} onPress={onBack}>
       <Typography textType="regular" size={16}>
-        {item.name}, {item.country}
+        {item.name || item.city_name || item.title || String(item)}
+        {item.country ? `, ${item.country}` : ''}
       </Typography>
     </TouchableOpacity>
   );
 };
 
 const AddMood = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const reduxCountry = useSelector((state: States) => state.Others.country);
+  const countries = useSelector((state: States) => state.Main.Countries);
+  const cities = useSelector((state: States) => state.Main.Cities);
+  const loading = useSelector((state: States) => state.Others.loading);
+
+  // Get country ID from Redux state or use default ID 1
+  const getCountryId = React.useCallback(() => {
+    if (reduxCountry && countries && Array.isArray(countries) && countries.length > 0) {
+      const selectedCountry = countries.find((country: any) => {
+        const countryValue = country.id?.toString() || country.code || country.value || String(country);
+        return countryValue === reduxCountry;
+      });
+      
+      if (selectedCountry?.id) {
+        return selectedCountry.id.toString();
+      }
+    }
+    // Default to ID 1 if no country is selected
+    return '1';
+  }, [reduxCountry, countries]);
+
+  // Fetch cities when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      const countryId = getCountryId();
+      dispatch(MainActions.GetCitiesByCountry({ countryId }));
+    }, [dispatch, getCountryId])
+  );
+
+  // Format cities data for display
+  const formattedCities = React.useMemo(() => {
+    if (!cities) return [];
+    
+    // Handle error response
+    if (!Array.isArray(cities) && (cities as any)?.error) {
+      return [];
+    }
+    
+    // Handle array of cities
+    if (Array.isArray(cities)) {
+      return cities;
+    }
+    
+    return [];
+  }, [cities]);
+
   return (
     <SafeAreaContainer safeArea={false}>
-        <View marginH-20 center marginT-20>
-          <Typography textType="semiBold" size={theme.fontSize.large20}>
-            Select Location
-          </Typography>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.color.primary} />
         </View>
+      )}
+      <View marginH-20 center marginT-20>
+        <Typography textType="semiBold" size={theme.fontSize.large20}>
+          Select Location
+        </Typography>
+      </View>
       <FlatList
-        data={cities}
+        data={formattedCities}
         renderItem={({ item }) => <CityItem item={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item.id?.toString() || item.code || index.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          !loading ? (
+            <View style={styles.emptyContainer}>
+              <Typography textType="regular" size={16} color={theme.color.descColor}>
+                No cities available
+              </Typography>
+            </View>
+          ) : null
+        }
       />
     </SafeAreaContainer>
   );
@@ -67,6 +113,22 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 40,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

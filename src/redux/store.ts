@@ -10,3 +10,5 @@ export const store = configureStore({
         Others: OtherSlice
     },
 })
+
+export type AppDispatch = typeof store.dispatch

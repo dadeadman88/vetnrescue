@@ -15,8 +15,21 @@ client.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        config.headers["Accept"] = "application/json"
-        config.headers["Content-Type"] = "multipart/form-data"
+        // Required headers for all API requests
+        config.headers["Accept"] = "application/json";
+        config.headers["X-API-Key"] = "TGXCOWWvETaUJvaGAaW3COmEnOieEabV";
+        
+        // Get language from Redux store, default to 'en' if not set
+        const language = store.getState().Others.language || 'en';
+        config.headers["Accept-Language"] = language;
+        
+        // Set Content-Type dynamically based on data type
+        // If data is FormData, browser/axios will set the boundary automatically
+        // If not set explicitly, axios will handle it correctly
+        if (!(config.data instanceof FormData)) {
+            config.headers["Content-Type"] = "application/json";
+        }
+        // For FormData, don't set Content-Type header - let axios handle it with boundary
 
         return config;
     },

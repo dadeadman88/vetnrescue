@@ -4,7 +4,10 @@ import { Others } from '../../utils/types';
 const initialState: Others = {
     loading: false,
     toast: null,
-    language: 'en'
+    language: 'en',
+    country: null,
+    state: null,
+    city: null
 }
 
 const OtherSlice = createSlice({
@@ -19,9 +22,18 @@ const OtherSlice = createSlice({
         },
         setLanguage(state, action) {
             state.language = action.payload;
+        },
+        setCountry(state, action) {
+            state.country = action.payload;
+        },
+        setState(state, action) {
+            state.state = action.payload;
+        },
+        setCity(state, action) {
+            state.city = action.payload;
         }
     }
 })
 
-export const { setLoading, showHideToast, setLanguage } = OtherSlice.actions
+export const { setLoading, showHideToast, setLanguage, setCountry, setState, setCity } = OtherSlice.actions
 export default OtherSlice.reducer

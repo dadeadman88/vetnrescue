@@ -1,5 +1,4 @@
-export const BASE_URL =
-  "https://alsayafelectromechanical.com/lindsayandre/api/";
+export const BASE_URL = "https://vetnrescue.com/api/";
 
 export const endpoints = {
   Login: "user/login",
@@ -21,4 +20,31 @@ export const endpoints = {
   GetDiet: "food/list",
   MoodAdd: "mood/user/add",
   GetMood: "mood/list",
+  GetCountries: "v1/countries",
+  GetStates: (countryCode: string) => `v1/states/${countryCode}`,
+  GetCities: (stateCode: string) => `v1/cities/${stateCode}`,
+  GetCitiesByCountry: (countryId: string | number) => `v1/cities-by-country/${countryId}`,
+  GetVetClinics: (cityId?: string | null) => {
+    let url = "v1/facilities?is_vet_clinic=1";
+    if (cityId) {
+      url += `&city_id=${encodeURIComponent(cityId)}`;
+    }
+    return url;
+  },
+  GetRescueShelters: (cityId?: string | null) => {
+    let url = "v1/facilities?is_rescue_shelter=1";
+    if (cityId) {
+      url += `&city_id=${encodeURIComponent(cityId)}`;
+    }
+    return url;
+  },
+  GetAdvertisements: "v1/advertisements",
+  AdvertisementClick: (id: string | number) => `v1/advertisements/${id}/click`,
+  SearchFacilities: (keyword: string, cityId?: string | null) => {
+    let url = `v1/facilities/search?keyword=${encodeURIComponent(keyword)}`;
+    if (cityId) {
+      url += `&city_id=${encodeURIComponent(cityId)}`;
+    }
+    return url;
+  },
 };

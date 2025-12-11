@@ -4,6 +4,9 @@ export interface Others {
   loading: boolean;
   toast: ToastProps | null;
   language: 'en' | 'ar';
+  country: string | null;
+  state: string | null;
+  city: string | null;
 }
 
 export interface ListingApis {
@@ -29,6 +32,9 @@ export interface ListingApis {
 }
 
 export interface Main {
+  categoryData: Array<any>;
+  AllCategoryData: Array<any>;
+  ExcerciseCategories: Array<any>;
   Diets: {
     data: Array<any>;
     pagination: {
@@ -43,6 +49,23 @@ export interface Main {
       to: number | null;
     };
   };
+  Moods: {
+    data: Array<any>;
+    pagination: {
+      total: number | null;
+      current: number | null;
+      first: number | null;
+      last: number | null;
+      previous: number | null;
+      next: number | null;
+      pages: number | null;
+      from: number | null; 
+      to: number | null;
+    };
+  };
+  Countries: Array<any>;
+  States: Array<any>;
+  Cities: Array<any>;
 }
 
 export interface OtherUser {

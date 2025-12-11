@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList, Linking } from "react-native";
+import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList, Linking, RefreshControl } from "react-native";
 import { View } from "react-native-ui-lib";
 import { IMAGES, theme, SCREENS } from "../../constants";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { States } from "../../utils/types";
 import { onBack } from "../../navigation/RootNavigation";
 import Swiper from "react-native-swiper";
+import { setLoading } from "../../redux/slices/OtherSlice";
+import client from "../../utils/AxiosInterceptor";
+import { endpoints } from "../../utils/Endpoints";
 
 const SearchIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -153,7 +156,36 @@ const vetData = [
   },
 ];
 
-const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 'en' | 'ar' }) => {
+interface FacilityItem {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+}
+
+const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | 'ar' }) => {
+  const handleCall = () => {
+    if (item.phone) {
+      // Clean phone number: remove spaces, parentheses, dashes, etc., but keep + and digits
+      const phoneNumber = item.phone.replace(/[^\d+]/g, '');
+      const telUrl = `tel:${phoneNumber}`;
+      Linking.openURL(telUrl).catch((err) => {
+        console.error('Error opening phone dialer:', err);
+      });
+    }
+  };
+
+  const handleDirections = () => {
+    if (item.address) {
+      // Encode the address for URL
+      const encodedAddress = encodeURIComponent(item.address);
+      // Use Google Maps search URL that works on both iOS and Android
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+      Linking.openURL(mapsUrl).catch((err) => {
+        console.error('Error opening Google Maps:', err);
+      });
+    }
+  };
   
   return (
     <View style={styles.card}>
@@ -172,13 +204,13 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
       </View>
       
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.callNowButton}>
+        <TouchableOpacity style={styles.callNowButton} onPress={handleCall}>
           <PhoneIcon />
           <Text style={styles.callNowText}>
             {language === 'ar' ? 'اتصل الآن' : 'Call Now'}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.directionsButton}>
+        <TouchableOpacity style={styles.directionsButton} onPress={handleDirections}>
           <MapIcon />
           <Text style={styles.directionsText}>
             {language === 'ar' ? 'الاتجاهات' : 'Directions'}
@@ -212,30 +244,24 @@ const ReportPetCard = ({ language }: { language: 'en' | 'ar' }) => {
   );
 };
 
-const adData: any[] = [
-  {
-    id: '1',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
-    url: 'https://www.happypaws.ae/',
-  },
-  {
-    id: '2',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
-    url: 'https://www.happypaws.ae/',
-  },
-  {
-    id: '3',
-    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxPIDfYULL2ryNPAr9BE5xOYqaGw6iJJEDw&s',
-    url: 'https://www.happypaws.ae/',
-  },
-];
+interface AdvertisementItem {
+  id: string;
+  image_url: string;
+  external_link: string;
+}
 
 const FitnessDetail = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const dispatch = useDispatch();
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("All Pets");
+  const [facilities, setFacilities] = useState<FacilityItem[]>([]);
+  const [initialFacilities, setInitialFacilities] = useState<FacilityItem[]>([]);
+  const [advertisements, setAdvertisements] = useState<AdvertisementItem[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   const language = useSelector((state: States) => state.Others.language);
+  const cityId = useSelector((state: States) => state.Others.city);
   const isRTL = language === 'ar';
   const requestType: "vet" | "rescue" = route?.params?.type ?? "rescue";
   const listHeading =
@@ -246,7 +272,6 @@ const FitnessDetail = () => {
       : language === "ar"
         ? "مراكز الإنقاذ القريبة"
         : "Nearby Rescue Centers";
-  const listData = requestType === "vet" ? vetData : clinicData;
   const searchPlaceholder =
     requestType === "vet"
       ? language === "ar"
@@ -256,9 +281,119 @@ const FitnessDetail = () => {
         ? "البحث عن مراكز الإنقاذ..."
         : "Search for rescue centers...";
 
-  useEffect(() => {
+  // Fetch data function (reusable for initial load and refresh)
+  const fetchData = async (showLoading: boolean = true) => {
+    try {
+      if (showLoading) {
+        dispatch(setLoading(true));
+      }
+      
+      // Fetch facilities with city_id if available
+      const endpoint = requestType === "vet" 
+        ? endpoints.GetVetClinics(cityId)
+        : endpoints.GetRescueShelters(cityId);
+      
+      const facilitiesResponse = await client.get(endpoint);
+      // Handle both response structures: response.data.data or response.data.response.data
+      const facilitiesData = facilitiesResponse.data?.data || facilitiesResponse.data?.response?.data || [];
+      
+      console.log('API Response:', facilitiesResponse.data);
+      console.log('Facilities Data:', facilitiesData);
+      
+      // Map the API response to only include name, address, and phone
+      const mappedFacilities: FacilityItem[] = facilitiesData.map((facility: any, index: number) => ({
+        id: facility.id?.toString() || index.toString(),
+        name: facility.name || facility.localized_name || '',
+        address: facility.address || facility.localized_address || '',
+        phone: facility.phone || '',
+      }));
+      
+      console.log('Mapped Facilities:', mappedFacilities);
+      setFacilities(mappedFacilities);
+      setInitialFacilities(mappedFacilities);
 
-  }, []);
+      // Fetch advertisements (without showing separate loader)
+      try {
+        const adsResponse = await client.get(endpoints.GetAdvertisements);
+        const adsData = adsResponse.data?.data || adsResponse.data?.response?.data || [];
+        
+        const mappedAds: AdvertisementItem[] = adsData.map((ad: any, index: number) => ({
+          id: ad.id?.toString() || index.toString(),
+          image_url: ad.image_url || '',
+          external_link: ad.external_link || '',
+        }));
+        
+        setAdvertisements(mappedAds);
+      } catch (adsError) {
+        console.error('Error fetching advertisements:', adsError);
+        setAdvertisements([]);
+      }
+    } catch (error) {
+      console.error('Error fetching facilities:', error);
+      setFacilities([]);
+      setInitialFacilities([]);
+    } finally {
+      if (showLoading) {
+        dispatch(setLoading(false));
+      }
+      setRefreshing(false);
+    }
+  };
+
+  // Fetch initial data
+  useEffect(() => {
+    fetchData();
+  }, [requestType, cityId, dispatch]);
+
+  // Handle pull to refresh
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData(false); // Don't show loading spinner during pull-to-refresh
+  };
+
+  // Handle search functionality
+  useEffect(() => {
+    const searchFacilities = async () => {
+      // If search is cleared or has less than 3 characters, show initial data
+      if (!searchText || searchText.trim().length < 3) {
+        setFacilities(initialFacilities);
+        return;
+      }
+
+      try {
+        dispatch(setLoading(true));
+        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId));
+        // Handle both response structures: response.data.data or response.data.response.data
+        const searchData = searchResponse.data?.data || searchResponse.data?.response?.data || [];
+        
+        console.log('Search API Response:', searchResponse.data);
+        console.log('Search Data:', searchData);
+        
+        // Map the search response
+        const mappedSearchResults: FacilityItem[] = searchData.map((facility: any, index: number) => ({
+          id: facility.id?.toString() || index.toString(),
+          name: facility.name || facility.localized_name || '',
+          address: facility.address || facility.localized_address || '',
+          phone: facility.phone || '',
+        }));
+        
+        console.log('Mapped Search Results:', mappedSearchResults);
+        setFacilities(mappedSearchResults);
+      } catch (error) {
+        console.error('Error searching facilities:', error);
+        setFacilities([]);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    // Debounce search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      searchFacilities();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchText, initialFacilities, cityId, dispatch]);
 
   return (
     <SafeAreaContainer safeArea={true}>
@@ -305,38 +440,57 @@ const FitnessDetail = () => {
         </View>
 
           <View style={styles.swiperContainer}>
-            <Swiper
-              showsButtons={false}
-              showsPagination={true}
-              loop={true}
-              autoplay={true}
-              autoplayTimeout={3}
-              style={styles.swiper}
-            >
-              {adData.map((ad) => (
-                <TouchableOpacity
-                  key={ad.id}
-                  activeOpacity={0.8}
-                  onPress={() => ad.url && Linking.openURL(ad.url)}
-                  style={styles.adSlide}
-                >
-                  <Image
-                    source={{ uri: ad.imageUrl }}
-                    style={styles.adImage}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              ))}
-            </Swiper>
+            {advertisements.length > 0 && (
+              <Swiper
+                showsButtons={false}
+                showsPagination={true}
+                loop={true}
+                autoplay={true}
+                autoplayTimeout={3}
+                style={styles.swiper}
+              >
+                {advertisements.map((ad) => (
+                  <TouchableOpacity
+                    key={ad.id}
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      if (ad.external_link) {
+                        // Track advertisement click
+                        client.post(endpoints.AdvertisementClick(ad.id)).catch((error) => {
+                          console.error('Error tracking advertisement click:', error);
+                        });
+                        // Open external link
+                        Linking.openURL(ad.external_link);
+                      }
+                    }}
+                    style={styles.adSlide}
+                  >
+                    <Image
+                      source={{ uri: ad.image_url }}
+                      style={styles.adImage}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </Swiper>
+            )}
           </View>
         
         <FlatList
-          data={listData}
+          data={facilities}
           renderItem={({ item }) => <ClinicCard item={item} language={language} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
           style={styles.list}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.color.primary || "#47a2ab"}
+              colors={[theme.color.primary || "#47a2ab"]}
+            />
+          }
           ListHeaderComponent={
             <>
               <View style={styles.listHeader}>
@@ -345,6 +499,16 @@ const FitnessDetail = () => {
                 </Text>
               </View>
             </>
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {cityId 
+                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results in this city')
+                  : (language === 'ar' ? 'لا توجد نتائج' : 'No results')
+                }
+              </Text>
+            </View>
           }
         />
       </View>
@@ -422,15 +586,18 @@ const styles = StyleSheet.create({
     height: 200,
     paddingVertical: 20,
   },
-  swiper: {},
+  swiper: {
+ 
+  },
   adSlide: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
   adImage: {
     width: "100%",
     height: 160,
     borderRadius: 16,
+    backgroundColor: "grey"
   },
   tabsScrollView: {
     width: "100%",
@@ -648,6 +815,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: theme.font.bold,
     color: "#fff",
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: theme.font.regular,
+    color: theme.color.tgray,
   },
 });
 

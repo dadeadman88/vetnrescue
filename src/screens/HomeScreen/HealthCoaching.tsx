@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
 import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList } from "react-native";
 import { View } from "react-native-ui-lib";
 import { IMAGES, theme, SCREENS } from "../../constants";
 import { useNavigation } from "@react-navigation/native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { States } from "../../utils/types";
+import { MainActions } from "../../redux/actions/MainActions";
+import { AppDispatch } from "../../redux/store";
+import { setLoading } from "../../redux/slices/OtherSlice";
+import client from "../../utils/AxiosInterceptor";
+import { endpoints } from "../../utils/Endpoints";
 
 const SearchIcon = () => (
   <Svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -87,40 +92,18 @@ const MapIcon = () => (
   </Svg>
 );
 
-const clinicData = [
-  {
-    id: '1',
-    name: 'Pet Care Veterinary Clinic',
-    distance: '1.2 mi',
-    rating: '4.5',
-    address: '456 Oak Avenue, Midtown',
-    phone: '+1 (555) 234-5678',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐢']
-  },
-  {
-    id: '2',
-    name: 'Animal Hospital & Care',
-    distance: '2.5 mi',
-    rating: '4.8',
-    address: '789 Pine Street, Downtown',
-    phone: '+1 (555) 345-6789',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐦']
-  },
-  {
-    id: '3',
-    name: 'Comprehensive Pet Health',
-    distance: '3.1 mi',
-    rating: '4.3',
-    address: '321 Elm Road, Uptown',
-    phone: '+1 (555) 456-7890',
-    status: 'Closed',
-    pets: ['🐕', '🐈', '🐢', '🐠']
-  },
-];
+interface ClinicItem {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  distance?: string;
+  rating?: string;
+  status?: string;
+  pets?: string[];
+}
 
-const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 'en' | 'ar' }) => {
+const ClinicCard = ({ item, language }: { item: ClinicItem; language: 'en' | 'ar' }) => {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -137,11 +120,13 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
         <Text style={styles.infoText}>{item.phone}</Text>
       </View>
       
-      <View style={styles.petIconsContainer}>
-        {item.pets.map((pet, index) => (
-          <Text key={index} style={styles.petIcon}>{pet}</Text>
-        ))}
-      </View>
+      {item.pets && item.pets.length > 0 && (
+        <View style={styles.petIconsContainer}>
+          {item.pets.map((pet, index) => (
+            <Text key={index} style={styles.petIcon}>{pet}</Text>
+          ))}
+        </View>
+      )}
       
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.callNowButton}>
@@ -163,14 +148,135 @@ const ClinicCard = ({ item, language }: { item: typeof clinicData[0]; language: 
 
 const HealthCoaching = () => {
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchText, setSearchText] = useState("");
   const [activeTab, setActiveTab] = useState("All Pets");
+  const [clinics, setClinics] = useState<ClinicItem[]>([]);
+  const [initialClinics, setInitialClinics] = useState<ClinicItem[]>([]);
   const language = useSelector((state: States) => state.Others.language);
+  const cityId = useSelector((state: States) => state.Others.city);
   const isRTL = language === 'ar';
 
-  useEffect(() => {
+  console.log('Clinics:', clinics);
 
-  }, []);
+  // Call API when component mounts or city changes
+  useEffect(() => {
+    console.log('useEffect called');
+    const fetchClinics = async () => {
+      try {
+        console.log('Fetching vet clinics...');
+        const result = await dispatch(MainActions.GetVetClinics({ cityId })).unwrap();
+        console.log('API Response:', JSON.stringify(result, null, 2));
+        console.log('Result type:', typeof result);
+        console.log('Is array:', Array.isArray(result));
+        
+        // Map API response to clinic items
+        let mappedClinics: ClinicItem[] = [];
+        
+        // Handle paginated response (like Diets/Moods)
+        if (result?.data && Array.isArray(result.data)) {
+          mappedClinics = result.data.map((clinic: any) => ({
+            id: clinic.id?.toString() || clinic.facility_id?.toString() || Math.random().toString(),
+            name: clinic.name || clinic.facility_name || clinic.title || 'Unknown Clinic',
+            address: clinic.address || clinic.location || clinic.full_address || '',
+            phone: clinic.phone || clinic.phone_number || clinic.mobile_number || clinic.contact_number || '',
+            distance: clinic.distance,
+            rating: clinic.rating,
+            status: clinic.status,
+            pets: clinic.pets || clinic.pet_types || [],
+          }));
+        } 
+        // Handle direct array response
+        else if (Array.isArray(result)) {
+          mappedClinics = result.map((clinic: any) => ({
+            id: clinic.id?.toString() || clinic.facility_id?.toString() || Math.random().toString(),
+            name: clinic.name || clinic.facility_name || clinic.title || 'Unknown Clinic',
+            address: clinic.address || clinic.location || clinic.full_address || '',
+            phone: clinic.phone || clinic.phone_number || clinic.mobile_number || clinic.contact_number || '',
+            distance: clinic.distance,
+            rating: clinic.rating,
+            status: clinic.status,
+            pets: clinic.pets || clinic.pet_types || [],
+          }));
+        } 
+        // Handle single object (wrap in array)
+        else if (result && typeof result === 'object' && result !== null) {
+          console.log('Single object response, wrapping in array');
+          const clinic = result as any;
+          mappedClinics = [{
+            id: clinic.id?.toString() || clinic.facility_id?.toString() || Math.random().toString(),
+            name: clinic.name || clinic.facility_name || clinic.title || 'Unknown Clinic',
+            address: clinic.address || clinic.location || clinic.full_address || '',
+            phone: clinic.phone || clinic.phone_number || clinic.mobile_number || clinic.contact_number || '',
+            distance: clinic.distance,
+            rating: clinic.rating,
+            status: clinic.status,
+            pets: clinic.pets || clinic.pet_types || [],
+          }];
+        } else {
+          console.log('Unexpected result structure:', result);
+        }
+        
+        console.log('Mapped clinics count:', mappedClinics.length);
+        console.log('Mapped clinics:', mappedClinics);
+        setClinics(mappedClinics);
+        setInitialClinics(mappedClinics);
+      } catch (error) {
+        console.error('Error fetching vet clinics:', error);
+        setClinics([]);
+        setInitialClinics([]);
+      }
+    };
+    fetchClinics();
+  }, [dispatch, cityId]);
+
+  // Handle search functionality
+  useEffect(() => {
+    const searchClinics = async () => {
+      // If search is cleared or has less than 3 characters, show initial data
+      if (!searchText || searchText.trim().length < 3) {
+        setClinics(initialClinics);
+        return;
+      }
+
+      try {
+        dispatch(setLoading(true));
+        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId));
+        // Handle both response structures: response.data.data or response.data.response.data
+        const searchData = searchResponse.data?.data || searchResponse.data?.response?.data || [];
+        
+        console.log('Search API Response:', searchResponse.data);
+        console.log('Search Data:', searchData);
+        
+        // Map the search response
+        const mappedSearchResults: ClinicItem[] = searchData.map((clinic: any, index: number) => ({
+          id: clinic.id?.toString() || clinic.facility_id?.toString() || Math.random().toString(),
+          name: clinic.name || clinic.facility_name || clinic.title || 'Unknown Clinic',
+          address: clinic.address || clinic.location || clinic.full_address || '',
+          phone: clinic.phone || clinic.phone_number || clinic.mobile_number || clinic.contact_number || '',
+          distance: clinic.distance,
+          rating: clinic.rating,
+          status: clinic.status,
+          pets: clinic.pets || clinic.pet_types || [],
+        }));
+        
+        console.log('Mapped Search Results:', mappedSearchResults);
+        setClinics(mappedSearchResults);
+      } catch (error) {
+        console.error('Error searching clinics:', error);
+        setClinics([]);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    // Debounce search to avoid too many API calls
+    const timeoutId = setTimeout(() => {
+      searchClinics();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchText, initialClinics, cityId, dispatch]);
 
   return (
     <SafeAreaContainer safeArea={true}>
@@ -315,7 +421,7 @@ const HealthCoaching = () => {
         </View>
         
         <FlatList
-          data={clinicData}
+          data={clinics}
           renderItem={({ item }) => <ClinicCard item={item} language={language} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
@@ -325,6 +431,16 @@ const HealthCoaching = () => {
             <View style={styles.listHeader}>
               <Text style={[styles.listHeaderText, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {language === 'ar' ? 'عيادات بيطرية قريبة' : 'Nearby Vet Clinics'}
+              </Text>
+            </View>
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {cityId 
+                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results in this city')
+                  : (language === 'ar' ? 'لا توجد نتائج' : 'No results')
+                }
               </Text>
             </View>
           }
@@ -563,6 +679,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: theme.font.semibold,
     color: theme.color.black,
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    fontFamily: theme.font.regular,
+    color: theme.color.tgray,
   },
 });
 
