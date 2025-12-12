@@ -47,4 +47,5 @@ export const endpoints = {
     }
     return url;
   },
+  SubmitContact: "v1/contact/submit",
 };

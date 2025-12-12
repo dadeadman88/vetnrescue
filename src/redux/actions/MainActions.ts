@@ -50,11 +50,14 @@ export const MainActions = {
   ),
   BookSlot: createAsyncThunk("main/BookSlot", async (data, thunkApi) => {
     thunkApi.dispatch(setLoading(true));
-    let apiCall = await client.post(endpoints.BookSlot, {
-      booking_id: data?.booking_id,
-    });
-    thunkApi.dispatch(setLoading(false));
-    return apiCall.data?.response?.data;
+    try {
+      let apiCall = await client.post(endpoints.BookSlot, {
+        booking_id: data?.booking_id,
+      });
+      return apiCall.data?.response?.data;
+    } finally {
+      thunkApi.dispatch(setLoading(false));
+    }
   }),
   GetDietService: createAsyncThunk(
     "main/GetDietService",
@@ -67,9 +70,12 @@ export const MainActions = {
     "main/AddDietService",
     async (data, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.post(endpoints.DietAdd, data);
-      thunkApi.dispatch(setLoading(false));
-      return apiCall.data?.response?.data;
+      try {
+        let apiCall = await client.post(endpoints.DietAdd, data);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     }
   ),
   GetMoodService: createAsyncThunk(
@@ -83,18 +89,24 @@ export const MainActions = {
     "main/AddMoodService",
     async (data, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.post(endpoints.MoodAdd, data);
-      thunkApi.dispatch(setLoading(false));
-      return apiCall.data?.response?.data;
+      try {
+        let apiCall = await client.post(endpoints.MoodAdd, data);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     }
   ),
   GetCountries: createAsyncThunk(
     "main/GetCountries",
     async (data, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.get(endpoints.GetCountries);
-      thunkApi.dispatch(setLoading(false));
-      return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+      try {
+        let apiCall = await client.get(endpoints.GetCountries);
+        return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     }
   ),
   GetStates: createAsyncThunk(
@@ -172,6 +184,28 @@ export const MainActions = {
         thunkApi.dispatch(setLoading(false));
         // Try different response structures
         return apiCall.data?.response?.data || apiCall.data?.response || apiCall.data?.data || apiCall.data;
+      } catch (error: any) {
+        thunkApi.dispatch(setLoading(false));
+        throw error;
+      }
+    }
+  ),
+  SubmitContact: createAsyncThunk(
+    "main/SubmitContact",
+    async (data: {
+      full_name: string;
+      phone_number: string;
+      message: string;
+      email: string;
+      country_id?: number | null;
+      state_id?: number | null;
+      city_id?: number | null;
+    }, thunkApi) => {
+      thunkApi.dispatch(setLoading(true));
+      try {
+        let apiCall = await client.post(endpoints.SubmitContact, data);
+        thunkApi.dispatch(setLoading(false));
+        return apiCall.data?.response?.data || apiCall.data?.data || apiCall.data;
       } catch (error: any) {
         thunkApi.dispatch(setLoading(false));
         throw error;

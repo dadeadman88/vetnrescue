@@ -13,33 +13,53 @@ import DeviceInfo from 'react-native-device-info';
 export const AuthActions = {
   Login: createAsyncThunk('auth/login', async (data, thunkApi) => {
     thunkApi.dispatch(setLoading(true));
-    let apiCall = await client.post(endpoints.Login, data);
-    return apiCall.data?.response?.data;
+    try {
+      let apiCall = await client.post(endpoints.Login, data);
+      return apiCall.data?.response?.data;
+    } finally {
+      thunkApi.dispatch(setLoading(false));
+    }
   }),
   SocialLogin: createAsyncThunk('auth/SocialLogin', async (data, thunkApi) => {
     thunkApi.dispatch(setLoading(true));
-    let formData = convertDataToFormData(data);
-    let apiCall = await client.post(endpoints.SocialLogin, formData);
-    return apiCall.data?.response?.data;
+    try {
+      let formData = convertDataToFormData(data);
+      let apiCall = await client.post(endpoints.SocialLogin, formData);
+      return apiCall.data?.response?.data;
+    } finally {
+      thunkApi.dispatch(setLoading(false));
+    }
   }),
   Register: createAsyncThunk('auth/register', async (data, thunkApi) => {
     thunkApi.dispatch(setLoading(true));
-    let apiCall = await client.post(endpoints.Register, data);
-    return apiCall.data?.response?.data;
+    try {
+      let apiCall = await client.post(endpoints.Register, data);
+      return apiCall.data?.response?.data;
+    } finally {
+      thunkApi.dispatch(setLoading(false));
+    }
   }),
   Logout: createAsyncThunk('auth/login', async (data, thunkApi) => {
     thunkApi.dispatch(setLoading(true));
-    let formData = new FormData();
-    formData.append('udid', DeviceInfo.getDeviceId());
-    let apiCall = await client.post(endpoints.Logout, formData);
-    return apiCall.data?.response?.data;
+    try {
+      let formData = new FormData();
+      formData.append('udid', DeviceInfo.getDeviceId());
+      let apiCall = await client.post(endpoints.Logout, formData);
+      return apiCall.data?.response?.data;
+    } finally {
+      thunkApi.dispatch(setLoading(false));
+    }
   }),
   ForgotPass: createAsyncThunk(
     'auth/ForgotPass',
     async (data: { email: string }, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.post(endpoints.ForgotPassword, data);
-      return apiCall.data?.response?.data;
+      try {
+        let apiCall = await client.post(endpoints.ForgotPassword, data);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   ChangeNotification: createAsyncThunk(
@@ -60,17 +80,25 @@ export const AuthActions = {
     'auth/ChangePass',
     async (data: { new_password: string; old_password: string }, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.post(endpoints.ResetPassword, data);
-      return apiCall.data?.response?.data;
+      try {
+        let apiCall = await client.post(endpoints.ResetPassword, data);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   EditProfile: createAsyncThunk(
     'auth/EditProfile',
     async (data: Auth['user'], thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let formData = convertDataToFormData(data);
-      let apiCall = await client.post(endpoints.UpdateProfile, formData);
-      return apiCall.data?.response?.data;
+      try {
+        let formData = convertDataToFormData(data);
+        let apiCall = await client.post(endpoints.UpdateProfile, formData);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   Vote: createAsyncThunk(
@@ -88,9 +116,13 @@ export const AuthActions = {
     'auth/ContactUs',
     async (data: any, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let formData = convertDataToFormData(data);
-      let apiCall = await client.post(endpoints.ContactUs, formData);
-      return apiCall.data?.response?.data;
+      try {
+        let formData = convertDataToFormData(data);
+        let apiCall = await client.post(endpoints.ContactUs, formData);
+        return apiCall.data?.response?.data;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   Notifications: createAsyncThunk(
@@ -142,10 +174,14 @@ export const AuthActions = {
     'auth/getContent',
     async (data: { type: string }, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let apiCall = await client.get(
-        endpoints.GetContent + '?type=' + data.type,
-      );
-      return apiCall.data?.response?.data[0];
+      try {
+        let apiCall = await client.get(
+          endpoints.GetContent + '?type=' + data.type,
+        );
+        return apiCall.data?.response?.data[0];
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   getCards: createAsyncThunk('auth/getCards', async (data, thunkApi) => {
@@ -156,10 +192,14 @@ export const AuthActions = {
     'auth/SaveCard',
     async (data: { stripe_token: string }, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
-      let formData = convertDataToFormData(data);
-      let apiCall = await client.post(endpoints.AddCard, formData);
-      thunkApi.dispatch(AuthActions.getCards());
-      return apiCall.data?.response?.data?.cards;
+      try {
+        let formData = convertDataToFormData(data);
+        let apiCall = await client.post(endpoints.AddCard, formData);
+        thunkApi.dispatch(AuthActions.getCards());
+        return apiCall.data?.response?.data?.cards;
+      } finally {
+        thunkApi.dispatch(setLoading(false));
+      }
     },
   ),
   ChangeDefaultCard: createAsyncThunk(

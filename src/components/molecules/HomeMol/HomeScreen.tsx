@@ -27,8 +27,8 @@ const HomeScreen = () => {
     },
     {
       key: 2,
-      title: "Advertisements",
-      titleAr: "الإعلانات",
+      title: "Contact for Advertisement",
+      titleAr: "تواصل معنا للترويج",
       navigateTo: SCREENS.EDIT_PROFILE,
       image: require("../../../assets/images/promoIcon.png"),
     }
@@ -51,7 +51,7 @@ const HomeScreen = () => {
           <ImageBackground source={require("../../../assets/images/buttonBg01.png")} style={styles.imageBackground} resizeMode="cover">
               <TouchableOpacity 
                 onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "vet" })}
-                style={{ alignItems: "center", justifyContent: "center" }}
+                style={styles.buttonContainer}
               >
                 <Image
                   source={HomeTabs[0].image}
@@ -93,7 +93,7 @@ const HomeScreen = () => {
           <ImageBackground source={require("../../../assets/images/buttonBg03.png")} style={styles.imageBackground} resizeMode="cover">
               <TouchableOpacity 
                 onPress={() => navigate(SCREENS.EDIT_PROFILE)}
-                style={{ alignItems: "center", justifyContent: "center" }}
+                style={styles.buttonContainer}
               >
                 <Image
                   source={HomeTabs[2].image}
@@ -140,12 +140,14 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.23, // 25vh equivalent
     alignItems: "center",
     justifyContent: "center",
-    marginBottom:20
+    marginBottom:20,
+    width: "100%",
   },
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-    width: "100%"
+    width: "100%",
+    height: "100%"
   }
 });
 

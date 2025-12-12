@@ -2,7 +2,7 @@ import * as React from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
 import { theme } from "../../constants";
 import { View } from "react-native-ui-lib";
-import { TouchableOpacity, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Typography } from "../../components/atoms/Typography";
 import { onBack } from "../../navigation/RootNavigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,7 +29,6 @@ const AddMood = () => {
   const reduxCountry = useSelector((state: States) => state.Others.country);
   const countries = useSelector((state: States) => state.Main.Countries);
   const cities = useSelector((state: States) => state.Main.Cities);
-  const loading = useSelector((state: States) => state.Others.loading);
 
   // Get country ID from Redux state or use default ID 1
   const getCountryId = React.useCallback(() => {
@@ -74,11 +73,6 @@ const AddMood = () => {
 
   return (
     <SafeAreaContainer safeArea={false}>
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.color.primary} />
-        </View>
-      )}
       <View marginH-20 center marginT-20>
         <Typography textType="semiBold" size={theme.fontSize.large20}>
           Select Location
@@ -91,13 +85,11 @@ const AddMood = () => {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
-          !loading ? (
-            <View style={styles.emptyContainer}>
-              <Typography textType="regular" size={16} color={theme.color.descColor}>
-                No cities available
-              </Typography>
-            </View>
-          ) : null
+          <View style={styles.emptyContainer}>
+            <Typography textType="regular" size={16} color={theme.color.descColor}>
+              No cities available
+            </Typography>
+          </View>
         }
       />
     </SafeAreaContainer>
@@ -113,17 +105,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 40,
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
   },
   emptyContainer: {
     paddingVertical: 40,

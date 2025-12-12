@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "react-native-ui-lib";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
 import { IMAGES, SCREENS, theme } from "../../constants";
@@ -240,11 +240,6 @@ const Exercise = () => {
 
   return (
       <View style={{ flex: 1, backgroundColor: "#FFF" }}>
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.color.primary} />
-          </View>
-        )}
         <View style={styles.headerWrapper}>
           <View style={styles.headerRow}>
             <View style={styles.logoContainer}>
@@ -479,7 +474,7 @@ const Exercise = () => {
                   dispatch(setCity(stringValue));
                 }}
                 setItems={setCityItems}
-                placeholder={language === 'ar' ? 'اختر المدينة' : 'Select City'}
+                placeholder={language === 'ar' ? 'اختر المدينة (اختياري)' : 'Select City (Optional)'}
                 disabled={!stateValue || (cityItems.length === 1 && (cityItems[0] as any)?.disabled)}
                 style={styles.dropdownPicker}
                 dropDownContainerStyle={styles.dropdownContainerStyle}
@@ -556,17 +551,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
     paddingVertical: 15,
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
   },
 });
 

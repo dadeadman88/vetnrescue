@@ -267,11 +267,11 @@ const FitnessDetail = () => {
   const listHeading =
     requestType === "vet"
       ? language === "ar"
-        ? "العيادات البيطرية القريبة"
-        : "Nearby Vet Clinics"
+        ? "العيادات البيطرية"
+        : "Vet Clinics"
       : language === "ar"
-        ? "مراكز الإنقاذ القريبة"
-        : "Nearby Rescue Centers";
+        ? "مراكز الإنقاذ"
+        : "Rescue Centers";
   const searchPlaceholder =
     requestType === "vet"
       ? language === "ar"
@@ -468,7 +468,7 @@ const FitnessDetail = () => {
                     <Image
                       source={{ uri: ad.image_url }}
                       style={styles.adImage}
-                      resizeMode="cover"
+                      resizeMode="contain"
                     />
                   </TouchableOpacity>
                 ))}
@@ -504,7 +504,7 @@ const FitnessDetail = () => {
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {cityId 
-                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results in this city')
+                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results')
                   : (language === 'ar' ? 'لا توجد نتائج' : 'No results')
                 }
               </Text>
@@ -595,9 +595,7 @@ const styles = StyleSheet.create({
   },
   adImage: {
     width: "100%",
-    height: 160,
-    borderRadius: 16,
-    backgroundColor: "grey"
+    height: 150
   },
   tabsScrollView: {
     width: "100%",

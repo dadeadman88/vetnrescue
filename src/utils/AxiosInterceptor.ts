@@ -41,12 +41,10 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
     res => {
-        store.dispatch(setLoading(false))
         return Promise.resolve(res)
     },
     error => {
         console.warn("error", error.message)
-        store.dispatch(setLoading(false))
         store.dispatch(showHideToast({
             visible: true,
             message: typeof error?.response?.data?.error?.messages == "object" ? Object.values(error?.response?.data?.error?.messages).join(",") : error.message == "Network Error" ? "Please check your network" : error?.response?.data?.error?.message ? error?.response?.data?.error?.message : error?.message,

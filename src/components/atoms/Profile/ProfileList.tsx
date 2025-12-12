@@ -522,7 +522,7 @@ const ProfileList = () => {
                   dispatch(setCity(stringValue));
                 }}
                 setItems={setCityItems}
-                placeholder={language === 'ar' ? 'اختر المدينة' : 'Select City'}
+                placeholder={language === 'ar' ? 'اختر المدينة (اختياري)' : 'Select City (Optional)'}
                 disabled={!stateValue || (cityItems.length === 1 && (cityItems[0] as any)?.disabled)}
                 style={styles.dropdownPicker}
                 dropDownContainerStyle={styles.dropdownContainerStyle}
