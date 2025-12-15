@@ -20,7 +20,7 @@ const Stack = createStackNavigator();
 const AppNavigator = () => {
   return (
     <Stack.Navigator
-      initialRouteName={SCREENS.EXERCISE}
+      initialRouteName={SCREENS.HOME}
       screenOptions={{
         headerShown: false,
       }}

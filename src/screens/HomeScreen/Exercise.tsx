@@ -245,6 +245,19 @@ const Exercise = () => {
             <View style={styles.logoContainer}>
               <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
             </View>
+            <TouchableOpacity 
+                    activeOpacity={0.9} 
+                    onPress={() => {
+                      const newLanguage = language === 'en' ? 'ar' : 'en';
+                      dispatch(setLanguage(newLanguage));
+                    }}
+                  >
+                    <Image
+                      source={language === 'en' ? IMAGES.engToAr : IMAGES.arToEng}
+                      resizeMode="contain"
+                      style={{ width: 100, height: 25 }}
+                    />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 20 }}>

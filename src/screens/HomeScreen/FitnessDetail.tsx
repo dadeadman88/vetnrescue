@@ -271,7 +271,7 @@ const FitnessDetail = () => {
         : "Vet Clinics"
       : language === "ar"
         ? "مراكز الإنقاذ"
-        : "Rescue Centers";
+        : "Rescue Shelters";
   const searchPlaceholder =
     requestType === "vet"
       ? language === "ar"
@@ -279,7 +279,7 @@ const FitnessDetail = () => {
         : "Search for vet clinics..."
       : language === "ar"
         ? "البحث عن مراكز الإنقاذ..."
-        : "Search for rescue centers...";
+        : "Search for rescue shelters...";
 
   // Fetch data function (reusable for initial load and refresh)
   const fetchData = async (showLoading: boolean = true) => {
@@ -400,21 +400,21 @@ const FitnessDetail = () => {
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
           <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={IMAGES.backButton}
-              style={{ width: 30, height: 30, }}
-            />
-          </TouchableOpacity>
-            <View style={styles.logoContainer}>
-              <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
-            </View>
-            <TouchableOpacity 
-              style={styles.notificationButton}
-              onPress={() => navigation.navigate(SCREENS.PROFILE)}
-            >
-              <Image source={IMAGES.settings} style={styles.notificationImage} resizeMode="contain" />
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image
+                source={IMAGES.backButton}
+                style={{ width: 30, height: 30, }}
+              />
             </TouchableOpacity>
+              <View style={styles.logoContainer}>
+                <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
+              </View>
+              <TouchableOpacity 
+                style={styles.notificationButton}
+                onPress={() => navigation.navigate(SCREENS.PROFILE)}
+              >
+                <Image source={IMAGES.settings} style={styles.notificationImage} resizeMode="contain" />
+              </TouchableOpacity>
           </View>
           
           <View style={styles.searchWrapper}>
@@ -443,7 +443,7 @@ const FitnessDetail = () => {
             {advertisements.length > 0 && (
               <Swiper
                 showsButtons={false}
-                showsPagination={true}
+                showsPagination={false}
                 loop={true}
                 autoplay={true}
                 autoplayTimeout={3}
@@ -468,7 +468,7 @@ const FitnessDetail = () => {
                     <Image
                       source={{ uri: ad.image_url }}
                       style={styles.adImage}
-                      resizeMode="contain"
+                      resizeMode="cover"
                     />
                   </TouchableOpacity>
                 ))}
@@ -595,7 +595,10 @@ const styles = StyleSheet.create({
   },
   adImage: {
     width: "100%",
-    height: 150
+    height: 150,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: theme.color.primary
   },
   tabsScrollView: {
     width: "100%",

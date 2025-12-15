@@ -331,7 +331,7 @@ const ProfileList = () => {
           <View row marginV-20>
             <Image
               source={item.image}
-              style={{ width: 30, height: 30 }}
+              style={{ width: 30, height: 40 }}
               resizeMode="contain"
             />
             <View marginL-10 flex>
@@ -419,7 +419,7 @@ const ProfileList = () => {
           <View row marginV-20>
             <Image
               source={item.image}
-              style={{ width: 30, height: 30 }}
+              style={{ width: 30, height: 40 }}
               resizeMode="contain"
             />
             <View marginL-10 flex>
@@ -492,7 +492,7 @@ const ProfileList = () => {
           <View row marginV-20>
             <Image
               source={item.image}
-              style={{ width: 30, height: 30 }}
+              style={{ width: 30, height: 40 }}
               resizeMode="contain"
             />
             <View marginL-10 flex>
