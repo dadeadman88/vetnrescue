@@ -26,10 +26,10 @@ const SearchIcon = () => (
 );
 
 const MapPinIcon = () => (
-  <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+  <Svg width="18" height="18" viewBox="0 0 24 24" fill="none">
     <Path
       d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z"
-      fill="#FF0000"
+      fill="#5FBF3A"
     />
   </Svg>
 );
@@ -38,7 +38,7 @@ const PhoneIcon = () => (
   <Svg width="16" height="16" viewBox="0 0 122.88 122.27">
     <Path
       d="M33.84,50.25c4.13,7.45,8.89,14.6,15.07,21.12c6.2,6.56,13.91,12.53,23.89,17.63c0.74,0.36,1.44,0.36,2.07,0.11 c0.95-0.36,1.92-1.15,2.87-2.1c0.74-0.74,1.66-1.92,2.62-3.21c3.84-5.05,8.59-11.32,15.3-8.18c0.15,0.07,0.26,0.15,0.41,0.21 l22.38,12.87c0.07,0.04,0.15,0.11,0.21,0.15c2.95,2.03,4.17,5.16,4.2,8.71c0,3.61-1.33,7.67-3.28,11.1 c-2.58,4.53-6.38,7.53-10.76,9.51c-4.17,1.92-8.81,2.95-13.27,3.61c-7,1.03-13.56,0.37-20.27-1.69 c-6.56-2.03-13.17-5.38-20.39-9.84l-0.53-0.34c-3.31-2.07-6.89-4.28-10.4-6.89C31.12,93.32,18.03,79.31,9.5,63.89 C2.35,50.95-1.55,36.98,0.58,23.67c1.18-7.3,4.31-13.94,9.77-18.32c4.76-3.84,11.17-5.94,19.47-5.2c0.95,0.07,1.8,0.62,2.25,1.44 l14.35,24.26c2.1,2.72,2.36,5.42,1.21,8.12c-0.95,2.21-2.87,4.25-5.49,6.15c-0.77,0.66-1.69,1.33-2.66,2.03 c-3.21,2.33-6.86,5.02-5.61,8.18L33.84,50.25L33.84,50.25L33.84,50.25z"
-      fill="#FFF"
+      fill="#5FBF3A"
     />
   </Svg>
 );
@@ -47,23 +47,23 @@ const CallIcon = () => (
   <Svg width="16" height="16" viewBox="0 0 122.88 122.27">
     <Path
       d="M33.84,50.25c4.13,7.45,8.89,14.6,15.07,21.12c6.2,6.56,13.91,12.53,23.89,17.63c0.74,0.36,1.44,0.36,2.07,0.11 c0.95-0.36,1.92-1.15,2.87-2.1c0.74-0.74,1.66-1.92,2.62-3.21c3.84-5.05,8.59-11.32,15.3-8.18c0.15,0.07,0.26,0.15,0.41,0.21 l22.38,12.87c0.07,0.04,0.15,0.11,0.21,0.15c2.95,2.03,4.17,5.16,4.2,8.71c0,3.61-1.33,7.67-3.28,11.1 c-2.58,4.53-6.38,7.53-10.76,9.51c-4.17,1.92-8.81,2.95-13.27,3.61c-7,1.03-13.56,0.37-20.27-1.69 c-6.56-2.03-13.17-5.38-20.39-9.84l-0.53-0.34c-3.31-2.07-6.89-4.28-10.4-6.89C31.12,93.32,18.03,79.31,9.5,63.89 C2.35,50.95-1.55,36.98,0.58,23.67c1.18-7.3,4.31-13.94,9.77-18.32c4.76-3.84,11.17-5.94,19.47-5.2c0.95,0.07,1.8,0.62,2.25,1.44 l14.35,24.26c2.1,2.72,2.36,5.42,1.21,8.12c-0.95,2.21-2.87,4.25-5.49,6.15c-0.77,0.66-1.69,1.33-2.66,2.03 c-3.21,2.33-6.86,5.02-5.61,8.18L33.84,50.25L33.84,50.25L33.84,50.25z"
-      fill="#000"
+      fill="#FFF"
     />
   </Svg>
 );
 
-const MapIcon = () => (
+const MapIcon = ({ color = "#4BB329" }: { color?: string }) => (
   <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <Path
       d="M9 20L3 17V4L9 7L15 4L21 7V17L15 20L9 20Z"
-      stroke="#000"
+      stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <Path
       d="M9 4V20M15 4V20"
-      stroke="#000"
+      stroke={color}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -90,78 +90,16 @@ const DocumentReportIcon = () => (
   </Svg>
 );
 
-const clinicData = [
-  {
-    id: '1',
-    name: 'Pet Care Center',
-    distance: '1.2 mi',
-    rating: '4.5',
-    address: '456 Oak Avenue, Midtown',
-    phone: '+1 (555) 234-5678',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐢']
-  },
-  {
-    id: '2',
-    name: 'Stray Paws Center',
-    distance: '2.5 mi',
-    rating: '4.8',
-    address: '789 Pine Street, Downtown',
-    phone: '+1 (555) 345-6789',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐦']
-  },
-  {
-    id: '3',
-    name: 'Safe Heaven Animal Rescue',
-    distance: '3.1 mi',
-    rating: '4.3',
-    address: '321 Elm Road, Uptown',
-    phone: '+1 (555) 456-7890',
-    status: 'Closed',
-    pets: ['🐕', '🐈', '🐢', '🐠']
-  },
-];
-
-const vetData = [
-  {
-    id: '1',
-    name: 'Pet Care Veterinary Clinic',
-    distance: '1.2 mi',
-    rating: '4.5',
-    address: '456 Oak Avenue, Midtown',
-    phone: '+1 (555) 234-5678',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐢']
-  },
-  {
-    id: '2',
-    name: 'Animal Hospital & Care',
-    distance: '2.5 mi',
-    rating: '4.8',
-    address: '789 Pine Street, Downtown',
-    phone: '+1 (555) 345-6789',
-    status: 'Open Now',
-    pets: ['🐕', '🐈', '🐦']
-  },
-  {
-    id: '3',
-    name: 'Comprehensive Pet Health',
-    distance: '3.1 mi',
-    rating: '4.3',
-    address: '321 Elm Road, Uptown',
-    phone: '+1 (555) 456-7890',
-    status: 'Closed',
-    pets: ['🐕', '🐈', '🐢', '🐠']
-  },
-];
-
 interface FacilityItem {
   id: string;
   name: string;
   address: string;
   phone: string;
+  image_url?: string;
 }
+
+// Fallback image URL for clinic cards
+const FALLBACK_CLINIC_IMAGE = 'https://www.carecredit.com/sites/cc/image/vet_clinic_vs_animal_hospital.jpg';
 
 const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | 'ar' }) => {
   const handleCall = () => {
@@ -186,36 +124,40 @@ const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | '
       });
     }
   };
+
+  // Use fallback image if no image_url is provided
+  const imageSource = { uri: FALLBACK_CLINIC_IMAGE };
   
   return (
     <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.clinicName}>{item.name}</Text>
-      </View>
+      <Image
+        source={imageSource}
+        style={styles.cardImage}
+        resizeMode="cover"
+      />
       
-      <View style={styles.infoRow}>
-        <MapPinIcon />
-        <Text style={styles.infoText}>{item.address}</Text>
-      </View>
-      
-      <View style={styles.infoRow}>
-        <CallIcon />
-        <Text style={styles.infoText}>{item.phone}</Text>
-      </View>
-      
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.callNowButton} onPress={handleCall}>
-          <PhoneIcon />
-          <Text style={styles.callNowText}>
-            {language === 'ar' ? 'اتصل الآن' : 'Call Now'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.directionsButton} onPress={handleDirections}>
-          <MapIcon />
-          <Text style={styles.directionsText}>
-            {language === 'ar' ? 'الاتجاهات' : 'Directions'}
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.cardContent}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.clinicName}>{item.name}</Text>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity style={styles.locationIconButton} onPress={handleDirections}>
+              <Image style={{ width: 30, height: 30 }} resizeMode="contain" source={require('../../assets/images/mapIcon.png')} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.phoneIconButton} onPress={handleCall}>
+              <Image style={{ width: 30, height: 30 }} resizeMode="contain" source={require('../../assets/images/callIcon.png')} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={[styles.infoRow, { marginLeft: -3 }]}>
+        <Image style={{ width: 18, height: 18 }} resizeMode="contain" source={require('../../assets/images/location-icon-small.png')} />
+          <Text style={styles.infoText}>{item.address}</Text>
+        </View>
+        
+        <View style={styles.infoRow}>
+          <Image style={{ width: 15, height: 20 }} resizeMode="contain" source={require('../../assets/images/call-icon-small.png')} />
+          <Text style={styles.infoText}>{item.phone}</Text>
+        </View>
       </View>
     </View>
   );
@@ -300,12 +242,13 @@ const FitnessDetail = () => {
       console.log('API Response:', facilitiesResponse.data);
       console.log('Facilities Data:', facilitiesData);
       
-      // Map the API response to only include name, address, and phone
+      // Map the API response to include name, address, phone, and image_url
       const mappedFacilities: FacilityItem[] = facilitiesData.map((facility: any, index: number) => ({
         id: facility.id?.toString() || index.toString(),
         name: facility.name || facility.localized_name || '',
         address: facility.address || facility.localized_address || '',
         phone: facility.phone || '',
+        image_url: facility.image_url || facility.image || '',
       }));
       
       console.log('Mapped Facilities:', mappedFacilities);
@@ -375,6 +318,7 @@ const FitnessDetail = () => {
           name: facility.name || facility.localized_name || '',
           address: facility.address || facility.localized_address || '',
           phone: facility.phone || '',
+          image_url: facility.image_url || facility.image || '',
         }));
         
         console.log('Mapped Search Results:', mappedSearchResults);
@@ -410,9 +354,8 @@ const FitnessDetail = () => {
                 <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
               </View>
               <TouchableOpacity 
-                style={styles.notificationButton}
-                onPress={() => navigation.navigate(SCREENS.PROFILE)}
-              >
+                style={[styles.notificationButton, { opacity: 0 }]}
+                >
                 <Image source={IMAGES.settings} style={styles.notificationImage} resizeMode="contain" />
               </TouchableOpacity>
           </View>
@@ -491,15 +434,6 @@ const FitnessDetail = () => {
               colors={[theme.color.primary || "#47a2ab"]}
             />
           }
-          ListHeaderComponent={
-            <>
-              <View style={styles.listHeader}>
-                <Text style={[styles.listHeaderText, { textAlign: isRTL ? 'right' : 'left' }]}>
-                  {listHeading}
-                </Text>
-              </View>
-            </>
-          }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
@@ -537,8 +471,8 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   logoImage: {
-    width: "50%",
-    height: 70,
+    width: "60%",
+    height: 60
   },
   notificationButton: {
     alignItems: "flex-end",
@@ -641,7 +575,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 20,
-    paddingTop: 20,
     paddingBottom: 40,
   },
   listHeader: {
@@ -655,9 +588,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 15,
-    padding: 20,
     marginBottom: 20,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#4BB329",
     shadowColor: "#000",
     shadowOffset: {
@@ -667,18 +599,56 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
+  },
+  cardImage: {
+    width: "96%",
+    height: 170,
+    margin: "2%",
+    borderRadius: 10
+  },
+  cardContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 10
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 12,
+    marginBottom: 5,
   },
   clinicName: {
     flex: 1,
     fontSize: 18,
     fontFamily: theme.font.bold,
     color: theme.color.black,
+    marginRight: 8,
+  },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  locationIconButton: {
+    padding: 4,
+  },
+  phoneIconButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#4BB329",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 4,
+  },
+  phoneIconWrapper: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#4BB329",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 4,
   },
   distance: {
     fontSize: 18,
@@ -693,7 +663,7 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 15,
     fontFamily: theme.font.regular,
-    color: theme.color.black,
+    color: "grey",
     marginLeft: 8,
   },
   statusContainer: {
@@ -744,13 +714,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#47a2ab",
-    paddingVertical: 14,
-    borderRadius: 10,
-    gap: 8,
+    backgroundColor: "#4BB329",
+    paddingVertical: 12,
+    borderRadius: 8,
+    gap: 6,
   },
   callNowText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: theme.font.semibold,
     color: "#fff",
   },
@@ -760,16 +730,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    paddingVertical: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: "#4BB329",
     gap: 6,
   },
   directionsText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: theme.font.semibold,
-    color: theme.color.black,
+    color: "#4BB329",
   },
   reportPetContainer: {
     backgroundColor: "#FFD700",

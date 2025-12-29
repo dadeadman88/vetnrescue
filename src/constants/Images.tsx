@@ -17,6 +17,8 @@ export const IMAGES = {
   lang: require("../assets/images/lang.png"),
   settings: require("../assets/images/account.png"),
 
+  promoIcon: require("../assets/images/promoIcon.png"),
+
   // Home Images
   homeHeaderImg: require("../assets/images/homeHeaderImg.png"),
   healthCoach: require("../assets/images/healthCoach.png"),
