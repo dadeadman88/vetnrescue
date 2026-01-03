@@ -96,6 +96,7 @@ interface FacilityItem {
   address: string;
   phone: string;
   image_url?: string;
+  google_maps_link?: string;
 }
 
 // Fallback image URL for clinic cards
@@ -114,19 +115,15 @@ const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | '
   };
 
   const handleDirections = () => {
-    if (item.address) {
-      // Encode the address for URL
-      const encodedAddress = encodeURIComponent(item.address);
-      // Use Google Maps search URL that works on both iOS and Android
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-      Linking.openURL(mapsUrl).catch((err) => {
+    if (item.google_maps_link) {
+      Linking.openURL(item.google_maps_link).catch((err) => {
         console.error('Error opening Google Maps:', err);
       });
     }
   };
 
   // Use fallback image if no image_url is provided
-  const imageSource = { uri: FALLBACK_CLINIC_IMAGE };
+  const imageSource = { uri: item.image_url || FALLBACK_CLINIC_IMAGE };
   
   return (
     <View style={styles.card}>
@@ -242,13 +239,14 @@ const FitnessDetail = () => {
       console.log('API Response:', facilitiesResponse.data);
       console.log('Facilities Data:', facilitiesData);
       
-      // Map the API response to include name, address, phone, and image_url
+      // Map the API response to include name, address, phone, image_url, and google_maps_link
       const mappedFacilities: FacilityItem[] = facilitiesData.map((facility: any, index: number) => ({
         id: facility.id?.toString() || index.toString(),
         name: facility.name || facility.localized_name || '',
         address: facility.address || facility.localized_address || '',
         phone: facility.phone || '',
         image_url: facility.image_url || facility.image || '',
+        google_maps_link: facility.google_maps_link || '',
       }));
       
       console.log('Mapped Facilities:', mappedFacilities);
@@ -319,6 +317,7 @@ const FitnessDetail = () => {
           address: facility.address || facility.localized_address || '',
           phone: facility.phone || '',
           image_url: facility.image_url || facility.image || '',
+          google_maps_link: facility.google_maps_link || '',
         }));
         
         console.log('Mapped Search Results:', mappedSearchResults);
