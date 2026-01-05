@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, ImageBackground, StyleSheet, TouchableOpacity, Dimensions, Linking, FlatList } from "react-native";
+import { Image, ImageBackground, StyleSheet, TouchableOpacity, Dimensions, Linking, FlatList, Platform } from "react-native";
 import { IMAGES, SCREENS, theme } from "../../../constants";
 import { View } from "react-native-ui-lib";
 import { Typography } from "../../atoms/Typography";
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: theme.color.primary,
     paddingTop:15,
-    paddingBottom: 20
+    paddingBottom: Platform.OS === 'android' ? 60 : 20
   }
 });
 
