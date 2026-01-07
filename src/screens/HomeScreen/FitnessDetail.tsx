@@ -339,7 +339,6 @@ const FitnessDetail = () => {
   }, [searchText, initialFacilities, cityId, dispatch]);
 
   return (
-    <SafeAreaContainer safeArea={true}>
       <View style={styles.container}>
         <View style={styles.headerWrapper}>
           <View style={styles.headerRow}>
@@ -445,14 +444,14 @@ const FitnessDetail = () => {
           }
         />
       </View>
-    </SafeAreaContainer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    paddingTop: 40
   },
   headerWrapper: {
     width: "100%",

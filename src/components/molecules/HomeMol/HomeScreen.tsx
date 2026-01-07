@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, ImageBackground, StyleSheet, TouchableOpacity, Dimensions, Linking, FlatList, Platform } from "react-native";
+import { Image, ImageBackground, StyleSheet, TouchableOpacity, Dimensions, Linking, FlatList, Platform, ScrollView } from "react-native";
 import { IMAGES, SCREENS, theme } from "../../../constants";
 import { View } from "react-native-ui-lib";
 import { Typography } from "../../atoms/Typography";
@@ -210,108 +210,112 @@ const HomeScreen = () => {
             </View>
           </View>
 
-          <View style={styles.flagsContainer}>
-            <Typography 
-              size={theme.fontSize.large} 
-              style={styles.selectCountryHeading}
-              textType="bold"
-            >
-              {language === 'ar' ? 'اختر البلد' : 'Select Country'}
-            </Typography>
-            <FlatList
-              data={flagCountries}
-              renderItem={({ item }) => (
-                <FlagItem
-                  item={item}
-                  isSelected={reduxCountry === item.value}
-                  onPress={() => handleSelectCountry(item)}
-                />
-              )}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.flagsList}
-            />
-          </View>  
+          <ScrollView showsVerticalScrollIndicator={false}>
 
-          <View style={styles.mainButtonsContainer}>
-             <TouchableOpacity 
-                  onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "vet" })}
-                  style={[styles.buttonContainer, styles.vetCard]}
+            <View style={styles.flagsContainer}>
+              <Typography 
+                size={theme.fontSize.large} 
+                style={styles.selectCountryHeading}
+                textType="bold"
+              >
+                {language === 'ar' ? 'اختر البلد' : 'Select Country'}
+              </Typography>
+              <FlatList
+                data={flagCountries}
+                renderItem={({ item }) => (
+                  <FlagItem
+                    item={item}
+                    isSelected={reduxCountry === item.value}
+                    onPress={() => handleSelectCountry(item)}
+                  />
+                )}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.flagsList}
+              />
+            </View>  
+
+            <View style={styles.mainButtonsContainer}>
+              <TouchableOpacity 
+                    onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "vet" })}
+                    style={[styles.buttonContainer, styles.vetCard]}
+                    activeOpacity={0.8}
+                  >
+                    <View style={[styles.imageContainer, styles.vetImageContainer]}>
+                      <Image
+                        source={HomeTabs[0].image}
+                        style={styles.cardImage}
+                        resizeMode="contain"
+                      />
+                    </View>
+                    <View style={styles.textContainer}>
+                      <Typography color="#000000" size={theme.fontSize.medium} align="center" style={styles.cardText}>
+                          {language === 'ar' ? HomeTabs[0].titleAr : HomeTabs[0].title}
+                      </Typography>
+                    </View>
+                  </TouchableOpacity>
+
+                <TouchableOpacity 
+                  onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "rescue" })}
+                  style={[styles.buttonContainer, styles.rescueCard]}
                   activeOpacity={0.8}
                 >
-                  <View style={[styles.imageContainer, styles.vetImageContainer]}>
+                  <View style={[styles.imageContainer, styles.rescueImageContainer]}>
                     <Image
-                      source={HomeTabs[0].image}
+                      source={HomeTabs[1].image}
                       style={styles.cardImage}
                       resizeMode="contain"
                     />
                   </View>
                   <View style={styles.textContainer}>
-                    <Typography color="#000000" size={theme.fontSize.large} align="center" style={styles.cardText}>
-                        {language === 'ar' ? HomeTabs[0].titleAr : HomeTabs[0].title}
+                    <Typography color="#000000" size={theme.fontSize.medium} align="center" style={styles.cardText}>
+                        {language === 'ar' ? HomeTabs[1].titleAr : HomeTabs[1].title}
                     </Typography>
                   </View>
                 </TouchableOpacity>
+            </View>
 
-              <TouchableOpacity 
-                onPress={() => navigate(SCREENS.FITNESS_DETAIL, { type: "rescue" })}
-                style={[styles.buttonContainer, styles.rescueCard]}
-                activeOpacity={0.8}
-              >
-                <View style={[styles.imageContainer, styles.rescueImageContainer]}>
-                  <Image
-                    source={HomeTabs[1].image}
-                    style={styles.cardImage}
-                    resizeMode="contain"
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Typography color="#000000" size={theme.fontSize.large} align="center" style={styles.cardText}>
-                      {language === 'ar' ? HomeTabs[1].titleAr : HomeTabs[1].title}
-                  </Typography>
-                </View>
-              </TouchableOpacity>
-          </View>
+            <View style={styles.swiperContainer}>
+              {advertisements.length > 0 && (
+                <Swiper
+                  showsButtons={false}
+                  showsPagination={false}
+                  loop={true}
+                  autoplay={true}
+                  autoplayTimeout={3}
+                  style={styles.swiper}
+                >
+                  {advertisements.map((ad) => (
+                    <TouchableOpacity
+                      key={ad.id}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        if (ad.external_link) {
+                          client.post(endpoints.AdvertisementClick(ad.id)).catch((error) => {
+                            console.error("Error tracking advertisement click:", error);
+                          });
+                          Linking.openURL(ad.external_link);
+                        }
+                      }}
+                      style={styles.adSlide}
+                    >
+                      <Image
+                        source={{ uri: ad.image_url }}
+                        style={styles.adImage}
+                        resizeMode="cover"
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </Swiper>
+              )}
+            </View>
 
-          <View style={styles.swiperContainer}>
-            {advertisements.length > 0 && (
-              <Swiper
-                showsButtons={false}
-                showsPagination={false}
-                loop={true}
-                autoplay={true}
-                autoplayTimeout={3}
-                style={styles.swiper}
-              >
-                {advertisements.map((ad) => (
-                  <TouchableOpacity
-                    key={ad.id}
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      if (ad.external_link) {
-                        client.post(endpoints.AdvertisementClick(ad.id)).catch((error) => {
-                          console.error("Error tracking advertisement click:", error);
-                        });
-                        Linking.openURL(ad.external_link);
-                      }
-                    }}
-                    style={styles.adSlide}
-                  >
-                    <Image
-                      source={{ uri: ad.image_url }}
-                      style={styles.adImage}
-                      resizeMode="cover"
-                    />
-                  </TouchableOpacity>
-                ))}
-              </Swiper>
-            )}
-          </View>
+          </ScrollView>
 
          <View style={styles.bottomLinksContainer}>
           <TouchableOpacity onPress={() => navigate(SCREENS.PRIVACY)} activeOpacity={0.8} style={styles.bottomButton}>
-            <Typography color={theme.color.white} size={theme.fontSize.large} align="center">
+            <Typography style={{fontWeight: "bold"}} color={theme.color.white} size={theme.fontSize.medium} align="center">
               {language === 'ar' ? 'الشروط والأحكام' : 'Terms & Privacy Policy'}
             </Typography>
           </TouchableOpacity>
@@ -324,7 +328,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   headerWrapper: {
     width: "100%",
-    paddingTop: 50
+    paddingTop: 30
   },
   headerRow: {
     width: "100%",
@@ -465,18 +469,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
     gap: 20,
-    paddingVertical: 20
+    paddingVertical: 10
   },
   bottomLinksContainer: {
     width: "100%",
-    justifyContent: "flex-end",
-    flex:1
+    paddingBottom: Platform.OS === 'android' ? 60 : 20
   },
   bottomButton: {
     width: "100%",
     backgroundColor: theme.color.primary,
-    paddingTop:15,
-    paddingBottom: Platform.OS === 'android' ? 60 : 20
+    paddingVertical:20,
+    
   }
 });
 
