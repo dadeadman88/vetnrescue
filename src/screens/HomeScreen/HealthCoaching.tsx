@@ -155,6 +155,7 @@ const HealthCoaching = () => {
   const [initialClinics, setInitialClinics] = useState<ClinicItem[]>([]);
   const language = useSelector((state: States) => state.Others.language);
   const cityId = useSelector((state: States) => state.Others.city);
+  const countryId = useSelector((state: States) => state.Others.country);
   const isRTL = language === 'ar';
 
   console.log('Clinics:', clinics);
@@ -165,7 +166,7 @@ const HealthCoaching = () => {
     const fetchClinics = async () => {
       try {
         console.log('Fetching vet clinics...');
-        const result = await dispatch(MainActions.GetVetClinics({ cityId })).unwrap();
+        const result = await dispatch(MainActions.GetVetClinics({ cityId, countryId })).unwrap();
         console.log('API Response:', JSON.stringify(result, null, 2));
         console.log('Result type:', typeof result);
         console.log('Is array:', Array.isArray(result));
@@ -228,7 +229,7 @@ const HealthCoaching = () => {
       }
     };
     fetchClinics();
-  }, [dispatch, cityId]);
+  }, [dispatch, cityId, countryId]);
 
   // Handle search functionality
   useEffect(() => {
@@ -241,7 +242,7 @@ const HealthCoaching = () => {
 
       try {
         dispatch(setLoading(true));
-        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId));
+        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId, countryId));
         // Handle both response structures: response.data.data or response.data.response.data
         const searchData = searchResponse.data?.data || searchResponse.data?.response?.data || [];
         
@@ -276,7 +277,7 @@ const HealthCoaching = () => {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchText, initialClinics, cityId, dispatch]);
+  }, [searchText, initialClinics, cityId, countryId, dispatch]);
 
   return (
     <SafeAreaContainer safeArea={true}>

@@ -177,10 +177,10 @@ export const MainActions = {
   ),
   GetVetClinics: createAsyncThunk(
     "main/GetVetClinics",
-    async ({ cityId }: { cityId?: string | null } = {}, thunkApi) => {
+    async ({ cityId, countryId }: { cityId?: string | null; countryId?: string | number | null } = {}, thunkApi) => {
       thunkApi.dispatch(setLoading(true));
       try {
-        let apiCall = await client.get(endpoints.GetVetClinics(cityId));
+        let apiCall = await client.get(endpoints.GetVetClinics(cityId, countryId));
         thunkApi.dispatch(setLoading(false));
         // Try different response structures
         return apiCall.data?.response?.data || apiCall.data?.response || apiCall.data?.data || apiCall.data;

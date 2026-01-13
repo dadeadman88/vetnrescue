@@ -24,15 +24,19 @@ export const endpoints = {
   GetStates: (countryCode: string) => `v1/states/${countryCode}`,
   GetCities: (stateCode: string) => `v1/cities/${stateCode}`,
   GetCitiesByCountry: (countryId: string | number) => `v1/cities-by-country/${countryId}`,
-  GetVetClinics: (cityId?: string | null) => {
+  GetVetClinics: (cityId?: string | null, countryId?: string | number | null) => {
     let url = "v1/facilities?is_vet_clinic=1";
+    const country_id = countryId || "1"; // Default to 1 if no country is selected
+    url += `&country_id=${encodeURIComponent(country_id)}`;
     if (cityId) {
       url += `&city_id=${encodeURIComponent(cityId)}`;
     }
     return url;
   },
-  GetRescueShelters: (cityId?: string | null) => {
+  GetRescueShelters: (cityId?: string | null, countryId?: string | number | null) => {
     let url = "v1/facilities?is_rescue_shelter=1";
+    const country_id = countryId || "1"; // Default to 1 if no country is selected
+    url += `&country_id=${encodeURIComponent(country_id)}`;
     if (cityId) {
       url += `&city_id=${encodeURIComponent(cityId)}`;
     }
@@ -40,8 +44,10 @@ export const endpoints = {
   },
   GetAdvertisements: "v1/advertisements",
   AdvertisementClick: (id: string | number) => `v1/advertisements/${id}/click`,
-  SearchFacilities: (keyword: string, cityId?: string | null) => {
+  SearchFacilities: (keyword: string, cityId?: string | null, countryId?: string | number | null) => {
     let url = `v1/facilities/search?keyword=${encodeURIComponent(keyword)}`;
+    const country_id = countryId || "1"; // Default to 1 if no country is selected
+    url += `&country_id=${encodeURIComponent(country_id)}`;
     if (cityId) {
       url += `&city_id=${encodeURIComponent(cityId)}`;
     }

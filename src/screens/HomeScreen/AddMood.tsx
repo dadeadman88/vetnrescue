@@ -10,12 +10,19 @@ import { States } from "../../utils/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { MainActions } from "../../redux/actions/MainActions";
 import { AppDispatch } from "../../redux/store";
+import { setCity } from "../../redux/slices/OtherSlice";
 
 interface AddMoodProps {}
 
-const CityItem = ({ item }: { item: any }) => {
+const CityItem = ({ item, onSelect }: { item: any; onSelect: (cityId: string) => void }) => {
+  const handlePress = () => {
+    // Extract city ID from the item
+    const cityId = item.id?.toString() || item.code || item.value || String(item.id || item);
+    onSelect(cityId);
+  };
+
   return (
-    <TouchableOpacity style={styles.cityItem} onPress={onBack}>
+    <TouchableOpacity style={styles.cityItem} onPress={handlePress}>
       <Typography textType="regular" size={16}>
         {item.name || item.city_name || item.title || String(item)}
         {item.country ? `, ${item.country}` : ''}
@@ -71,6 +78,14 @@ const AddMood = () => {
     return [];
   }, [cities]);
 
+  // Handle city selection
+  const handleCitySelect = React.useCallback((cityId: string) => {
+    // Store city ID in Redux
+    dispatch(setCity(cityId));
+    // Navigate back
+    onBack();
+  }, [dispatch]);
+
   return (
     <SafeAreaContainer safeArea={false}>
       <View marginH-20 center marginT-20>
@@ -80,7 +95,7 @@ const AddMood = () => {
       </View>
       <FlatList
         data={formattedCities}
-        renderItem={({ item }) => <CityItem item={item} />}
+        renderItem={({ item }) => <CityItem item={item} onSelect={handleCitySelect} />}
         keyExtractor={(item, index) => item.id?.toString() || item.code || index.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}

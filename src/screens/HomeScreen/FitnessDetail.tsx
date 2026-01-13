@@ -93,8 +93,12 @@ const DocumentReportIcon = () => (
 interface FacilityItem {
   id: string;
   name: string;
+  name_ar?: string;
   address: string;
+  address_ar?: string;
   phone: string;
+  description?: string;
+  description_ar?: string;
   image_url?: string;
   google_maps_link?: string;
 }
@@ -134,8 +138,8 @@ const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | '
       />
       
       <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.clinicName}>{item.name}</Text>
+        <View style={[styles.cardHeader, { flexDirection: language === 'ar' ? 'row-reverse' : 'row' }]}>
+          <Text style={[styles.clinicName, { textAlign: language === 'ar' ? 'right' : 'left' }]}>{language === 'ar' && item.name_ar ? item.name_ar : item.name}</Text>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.locationIconButton} onPress={handleDirections}>
               <Image style={{ width: 30, height: 30 }} resizeMode="contain" source={require('../../assets/images/mapIcon.png')} />
@@ -146,16 +150,21 @@ const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | '
           </View>
         </View>
         
-        <View style={[styles.infoRow, { marginLeft: -3 }]}>
-        <Image style={{ width: 18, height: 18 }} resizeMode="contain" source={require('../../assets/images/location-icon-small.png')} />
-          <Text style={styles.infoText}>{item.address}</Text>
+        <View style={[styles.infoRow, { marginLeft: -3, flexDirection: language === 'ar' ? 'row-reverse' : 'row' }]}>
+        <Image style={{ width: 18, height: 18, marginRight: language === 'ar' ? -2 : 0, marginLeft: language === 'ar' ? 2 : 0, marginTop: language === 'ar' ? 10 : 0}} resizeMode="contain" source={require('../../assets/images/location-icon-small.png')} />
+          <Text style={styles.infoText}>{language === 'ar' && item.address_ar ? item.address_ar : item.address}</Text>
         </View>
         
-        <View style={styles.infoRow}>
-          <Image style={{ width: 15, height: 20 }} resizeMode="contain" source={require('../../assets/images/call-icon-small.png')} />
+        <View style={[styles.infoRow, { flexDirection: language === 'ar' ? 'row-reverse' : 'row' }]}>
+          <Image style={{ width: 15, height: 20, marginRight: language === 'ar' ? 0 : 8, marginLeft: language === 'ar' ? 8 : 0 }} resizeMode="contain" source={require('../../assets/images/call-icon-small.png')} />
           <Text style={styles.infoText}>{item.phone}</Text>
         </View>
-      </View>
+
+          <View style={styles.clinicDescriptionContainer}>
+            <Text style={[styles.clinicDescription, { textAlign: language === 'ar' ? 'right' : 'left' }]}>{language === 'ar' && item.description_ar ? item.description_ar : item.description}</Text>
+          </View>
+
+        </View>
     </View>
   );
 };
@@ -201,6 +210,7 @@ const FitnessDetail = () => {
   const [refreshing, setRefreshing] = useState(false);
   const language = useSelector((state: States) => state.Others.language);
   const cityId = useSelector((state: States) => state.Others.city);
+  const countryId = useSelector((state: States) => state.Others.country);
   const isRTL = language === 'ar';
   const requestType: "vet" | "rescue" = route?.params?.type ?? "rescue";
   const listHeading =
@@ -227,10 +237,10 @@ const FitnessDetail = () => {
         dispatch(setLoading(true));
       }
       
-      // Fetch facilities with city_id if available
+      // Fetch facilities with country_id (default to 1) and city_id if available
       const endpoint = requestType === "vet" 
-        ? endpoints.GetVetClinics(cityId)
-        : endpoints.GetRescueShelters(cityId);
+        ? endpoints.GetVetClinics(cityId, countryId)
+        : endpoints.GetRescueShelters(cityId, countryId);
       
       const facilitiesResponse = await client.get(endpoint);
       // Handle both response structures: response.data.data or response.data.response.data
@@ -243,8 +253,12 @@ const FitnessDetail = () => {
       const mappedFacilities: FacilityItem[] = facilitiesData.map((facility: any, index: number) => ({
         id: facility.id?.toString() || index.toString(),
         name: facility.name || facility.localized_name || '',
+        name_ar: facility.name_ar || '',
         address: facility.address || facility.localized_address || '',
+        address_ar: facility.address_ar || '',
         phone: facility.phone || '',
+        description: facility.description || '',
+        description_ar: facility.description_ar || '',
         image_url: facility.image_url || facility.image || '',
         google_maps_link: facility.google_maps_link || '',
       }));
@@ -284,7 +298,7 @@ const FitnessDetail = () => {
   // Fetch initial data
   useEffect(() => {
     fetchData();
-  }, [requestType, cityId, dispatch]);
+  }, [requestType, cityId, countryId, dispatch]);
 
   // Handle pull to refresh
   const onRefresh = async () => {
@@ -303,7 +317,7 @@ const FitnessDetail = () => {
 
       try {
         dispatch(setLoading(true));
-        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId));
+        const searchResponse = await client.get(endpoints.SearchFacilities(searchText.trim(), cityId, countryId));
         // Handle both response structures: response.data.data or response.data.response.data
         const searchData = searchResponse.data?.data || searchResponse.data?.response?.data || [];
         
@@ -314,8 +328,12 @@ const FitnessDetail = () => {
         const mappedSearchResults: FacilityItem[] = searchData.map((facility: any, index: number) => ({
           id: facility.id?.toString() || index.toString(),
           name: facility.name || facility.localized_name || '',
+          name_ar: facility.name_ar || '',
           address: facility.address || facility.localized_address || '',
+          address_ar: facility.address_ar || '',
           phone: facility.phone || '',
+          description: facility.description || '',
+          description_ar: facility.description_ar || '',
           image_url: facility.image_url || facility.image || '',
           google_maps_link: facility.google_maps_link || '',
         }));
@@ -336,7 +354,7 @@ const FitnessDetail = () => {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchText, initialFacilities, cityId, dispatch]);
+  }, [searchText, initialFacilities, cityId, countryId, dispatch]);
 
   return (
       <View style={styles.container}>
@@ -793,6 +811,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: theme.font.regular,
     color: theme.color.tgray,
+  },
+  clinicDescriptionContainer: {
+    marginTop: 5,
+  },
+  clinicDescription: {
+    fontSize: 15,
+    fontFamily: theme.font.regular,
+    color: "#000",
+    marginBottom: 16,
+    lineHeight: 22,
   },
 });
 
