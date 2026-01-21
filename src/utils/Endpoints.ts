@@ -42,7 +42,13 @@ export const endpoints = {
     }
     return url;
   },
-  GetAdvertisements: "v1/advertisements",
+  GetAdvertisements: (countryId?: string | number | null) => {
+    let url = "v1/advertisements";
+    if (countryId) {
+      url += `?country_id=${encodeURIComponent(countryId)}`;
+    }
+    return url;
+  },
   AdvertisementClick: (id: string | number) => `v1/advertisements/${id}/click`,
   SearchFacilities: (keyword: string, cityId?: string | null, countryId?: string | number | null) => {
     let url = `v1/facilities/search?keyword=${encodeURIComponent(keyword)}`;

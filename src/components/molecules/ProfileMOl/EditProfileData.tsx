@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
-import { View } from "react-native-ui-lib";
+import { Text, View } from "react-native-ui-lib";
 import { commonStyles } from "../../../globalStyle";
 import ProfileImg from "../../atoms/Profile/ProfileImg";
-import { onBack } from "../../../navigation/RootNavigation";
+import { navigate, onBack } from "../../../navigation/RootNavigation";
 import { CustomBtn } from "../../atoms/OnBoardingAtoms/OnBeardingBottomBtn";
 import { InputText } from "../../atoms/InputText";
 import { useSelector, useDispatch } from "react-redux";
@@ -12,7 +12,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useFocusEffect } from "@react-navigation/native";
 import { MainActions } from "../../../redux/actions/MainActions";
 import { AppDispatch } from "../../../redux/store";
-import { theme } from "../../../constants";
+import { SCREENS, theme } from "../../../constants";
 import { verticalScale } from "react-native-size-matters";
 import { ToastPresets } from "react-native-ui-lib";
 import { showHideToast } from "../../../redux/slices/OtherSlice";
@@ -553,7 +553,13 @@ const EditProfileData = () => {
           }}
         />
 
-        <View marginV-40>
+        <View marginV-10>
+          <TouchableOpacity onPress={() => navigate(SCREENS.PRIVACY)} activeOpacity={0.8}>
+            <Text style={{ textDecorationLine: 'underline', color: theme.color.primary, textAlign:"center", fontSize:18 }}>{language === 'ar' ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View marginV-20 style={{ marginBottom: 40}}>
           <CustomBtn label={language === 'ar' ? "إرسال" : "Submit"} onPress={handleSubmit} />
         </View>
       </ScrollView>

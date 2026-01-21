@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList, Linking, RefreshControl } from "react-native";
+import { Image, ScrollView, TouchableOpacity, TextInput, StyleSheet, View as RNView, Text, FlatList, Linking, RefreshControl, Dimensions, Animated } from "react-native";
 import { View } from "react-native-ui-lib";
 import { IMAGES, theme, SCREENS } from "../../constants";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -159,11 +159,11 @@ const ClinicCard = ({ item, language }: { item: FacilityItem; language: 'en' | '
           <Image style={{ width: 15, height: 20, marginRight: language === 'ar' ? 0 : 8, marginLeft: language === 'ar' ? 8 : 0 }} resizeMode="contain" source={require('../../assets/images/call-icon-small.png')} />
           <Text style={styles.infoText}>{item.phone}</Text>
         </View>
-
+        {/* {item.description && (
           <View style={styles.clinicDescriptionContainer}>
             <Text style={[styles.clinicDescription, { textAlign: language === 'ar' ? 'right' : 'left' }]}>{language === 'ar' && item.description_ar ? item.description_ar : item.description}</Text>
           </View>
-
+        )} */}
         </View>
     </View>
   );
@@ -199,6 +199,67 @@ interface AdvertisementItem {
 }
 
 const FitnessDetail = () => {
+  const lastOffsetY = useRef(0);
+  const isDragging = useRef(false);
+  const lastAction = useRef<"up" | "down" | null>(null);
+  const searchOpacity = useRef(new Animated.Value(1)).current;
+  const searchHeight = useRef(new Animated.Value(55)).current;
+
+  const onScroll = (event: any) => {
+    if (!isDragging.current) return;
+  
+    const offsetY = event.nativeEvent.contentOffset.y;
+  
+    if (offsetY < 100) {
+      lastAction.current = null;
+      lastOffsetY.current = offsetY;
+      // Show search wrapper when near top
+      Animated.timing(searchHeight, {
+        toValue: 55,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      Animated.timing(searchOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      return;
+    }
+  
+    if (offsetY > lastOffsetY.current && lastAction.current !== "down") {
+      lastAction.current = "down";
+      // Fade out search wrapper when scrolling down
+      Animated.timing(searchHeight, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      Animated.timing(searchOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  
+    if (offsetY < lastOffsetY.current && lastAction.current !== "up") {
+      lastAction.current = "up";
+      // Fade in search wrapper when scrolling up
+      Animated.timing(searchOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      Animated.timing(searchHeight, {
+        toValue: 55,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  
+    lastOffsetY.current = offsetY;
+  };
+
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const dispatch = useDispatch();
@@ -208,6 +269,7 @@ const FitnessDetail = () => {
   const [initialFacilities, setInitialFacilities] = useState<FacilityItem[]>([]);
   const [advertisements, setAdvertisements] = useState<AdvertisementItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const language = useSelector((state: States) => state.Others.language);
   const cityId = useSelector((state: States) => state.Others.city);
   const countryId = useSelector((state: States) => state.Others.country);
@@ -269,7 +331,7 @@ const FitnessDetail = () => {
 
       // Fetch advertisements (without showing separate loader)
       try {
-        const adsResponse = await client.get(endpoints.GetAdvertisements);
+        const adsResponse = await client.get(endpoints.GetAdvertisements(countryId));
         const adsData = adsResponse.data?.data || adsResponse.data?.response?.data || [];
         
         const mappedAds: AdvertisementItem[] = adsData.map((ad: any, index: number) => ({
@@ -369,14 +431,12 @@ const FitnessDetail = () => {
               <View style={styles.logoContainer}>
                 <Image source={IMAGES.headerLogo} style={styles.logoImage} resizeMode="contain" />
               </View>
-              <TouchableOpacity 
-                style={[styles.notificationButton, { opacity: 0 }]}
-                >
+              <TouchableOpacity style={[styles.notificationButton, { opacity: 0 }]}>
                 <Image source={IMAGES.settings} style={styles.notificationImage} resizeMode="contain" />
               </TouchableOpacity>
           </View>
           
-          <View style={styles.searchWrapper}>
+          <Animated.View style={[styles.searchWrapper, { opacity: searchOpacity, height: searchHeight }]}>
             <View style={[styles.searchContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <RNView style={[styles.searchIcon, { marginRight: isRTL ? 0 : 10, marginLeft: isRTL ? 10 : 0 }]}>
                 <SearchIcon />
@@ -387,6 +447,8 @@ const FitnessDetail = () => {
                 placeholderTextColor={theme.color.tgray}
                 value={searchText}
                 onChangeText={setSearchText}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
               />
               <TouchableOpacity 
                 style={styles.notificationButton}
@@ -395,9 +457,46 @@ const FitnessDetail = () => {
                 <Image source={IMAGES.filterLocation} style={styles.notificationImage} resizeMode="contain" />
             </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
         </View>
+        
+        <FlatList
+          data={facilities}
+          renderItem={({ item }) => <ClinicCard item={item} language={language} />}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          onScroll={onScroll}
+          onScrollBeginDrag={() => {
+            isDragging.current = true;
+          }}
+          onScrollEndDrag={() => {
+            isDragging.current = false;
+          }}
+          scrollEventThrottle={16}
+          style={styles.list}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.color.primary || "#47a2ab"}
+              colors={[theme.color.primary || "#47a2ab"]}
+            />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {cityId 
+                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results')
+                  : (language === 'ar' ? 'لا توجد نتائج' : 'No results')
+                }
+              </Text>
+            </View>
+          }
+        />
 
+
+         {!isSearchFocused && (
           <View style={styles.swiperContainer}>
             {advertisements.length > 0 && (
               <Swiper
@@ -434,33 +533,7 @@ const FitnessDetail = () => {
               </Swiper>
             )}
           </View>
-        
-        <FlatList
-          data={facilities}
-          renderItem={({ item }) => <ClinicCard item={item} language={language} />}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
-          style={styles.list}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={theme.color.primary || "#47a2ab"}
-              colors={[theme.color.primary || "#47a2ab"]}
-            />
-          }
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={[styles.emptyText, { textAlign: isRTL ? 'right' : 'left' }]}>
-                {cityId 
-                  ? (language === 'ar' ? 'لا توجد نتائج في هذه المدينة' : 'No results')
-                  : (language === 'ar' ? 'لا توجد نتائج' : 'No results')
-                }
-              </Text>
-            </View>
-          }
-        />
+         )}
       </View>
   );
 };
@@ -502,6 +575,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
     paddingTop: 5,
+    height: 55
   },
   searchContainer: {
     flexDirection: "row",
@@ -533,8 +607,9 @@ const styles = StyleSheet.create({
   },
   swiperContainer: {
     width: "100%",
-    height: 200,
+    height: Dimensions.get('window').height * 0.232, // 25vh equivalent
     paddingVertical: 20,
+    marginBottom: 20
   },
   swiper: {
  
@@ -588,6 +663,7 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
     backgroundColor: "#fff",
+    marginTop:20
   },
   listContent: {
     paddingHorizontal: 20,

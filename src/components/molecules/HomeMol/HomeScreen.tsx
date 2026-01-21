@@ -108,7 +108,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchAdvertisements = async () => {
       try {
-        const adsResponse = await client.get(endpoints.GetAdvertisements);
+        const adsResponse = await client.get(endpoints.GetAdvertisements());
         const adsData = adsResponse.data?.data || adsResponse.data?.response?.data || [];
 
         const mappedAds: AdvertisementItem[] = adsData.map((ad: any, index: number) => ({
@@ -212,7 +212,7 @@ const HomeScreen = () => {
             </View>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
 
             <View style={styles.flagsContainer}>
               <Typography 
@@ -278,7 +278,11 @@ const HomeScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.swiperContainer}>
+            
+
+          </ScrollView>
+
+          <View style={styles.swiperContainer}>
               {advertisements.length > 0 && (
                 <Swiper
                   showsButtons={false}
@@ -313,15 +317,15 @@ const HomeScreen = () => {
               )}
             </View>
 
-          </ScrollView>
-
-         <View style={styles.bottomLinksContainer}>
-          <TouchableOpacity onPress={() => navigate(SCREENS.PRIVACY)} activeOpacity={0.8} style={styles.bottomButton}>
-            <Typography style={{fontWeight: "bold", lineHeight: 30}} color={theme.color.white} size={theme.fontSize.medium} align="center">
-              {language === 'ar' ? 'الشروط والأحكام' : 'Terms & Privacy Policy'}
-            </Typography>
-          </TouchableOpacity>
-         </View>
+          {/*
+          <View style={styles.bottomLinksContainer}>
+            <TouchableOpacity onPress={() => navigate(SCREENS.PRIVACY)} activeOpacity={0.8} style={styles.bottomButton}>
+              <Typography style={{fontWeight: "bold", lineHeight: 30}} color={theme.color.white} size={theme.fontSize.medium} align="center">
+                {language === 'ar' ? 'الشروط والأحكام' : 'Terms & Privacy Policy'}
+              </Typography>
+            </TouchableOpacity>
+          </View>
+          */}
 
       </View>
   );
@@ -397,7 +401,8 @@ const styles = StyleSheet.create({
   swiperContainer: {
     width: "100%",
     height: Dimensions.get('window').height * 0.232, // 25vh equivalent
-    paddingVertical: 20
+    paddingVertical: 20,
+    marginBottom: 30
   },
   swiper: {
 
