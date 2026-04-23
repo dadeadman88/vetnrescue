@@ -1,8 +1,6 @@
 import { ReactNode } from "react";
 import { Dimensions } from "react-native";
 import { SCREENS } from "./ScreenNames";
-import { navigate } from "../navigation/RootNavigation";
-import { IMAGES } from ".";
 interface Tab {
   key: number;
   title: string;
@@ -72,14 +70,14 @@ export const BOTTOMTABS = [
     key: 0,
     title: "Vet Finder",
     titleAr: "البحث عن الطبيب البيطري",
-    navigateTo: SCREENS.HEALTH_COACHING,
+    navigateTo: SCREENS.VET_DETAILS_OLD,
     image: require("../assets/images/petFinder.png"),
   },
   {
     key: 1,
     title: "Rescue Services",
     titleAr: "خدمات الإنقاذ",
-    navigateTo: SCREENS.FITNESS_DETAIL,
+    navigateTo: SCREENS.VET_DETAILS,
     image: require("../assets/images/rescueIcon.png"),
   },
   {

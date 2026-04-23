@@ -1,9 +1,6 @@
 export const SCREENS = {
   // AUTH SCREEN
   ONBOARDING: "OnBoarding",
-  LOGIN: "Login",
-  SIGN_UP: "SignUp",
-  FORGOT: "ForgotPass",
 
   // Bottom Screen
   HOME: "Home",
@@ -17,8 +14,8 @@ export const SCREENS = {
   EXERCISE_DETAIL: "ExerciseDetail",
   WORKOUT: "Workout",
   WORKOUT_RESULT: "WorkoutResult",
-  HEALTH_COACHING: "HealthCoaching",
-  FITNESS_DETAIL: "FitnessDetail",
+  VET_DETAILS_OLD: "VetDetailsOld",
+  VET_DETAILS: "VetDetails",
   NUTRITION_DETAIL: "NutrtionDetail",
 
   SUBSCRIPTION: "Subscription",
@@ -26,11 +23,11 @@ export const SCREENS = {
   PAYMENT_CONFIRM: "PaymentConfirm",
 
   GOAL_DETAILS: "GoalDetails",
-  EDIT_PROFILE: "EditProfile",
+  ADVERTISEMENT_FORM: "AdvertisementForm",
   CHANGE_PASS: "ChangePassword",
   PRIVACY: "Privacy",
   DIET: "Diet",
   ADD_DIET: "AddDiet",
   MOOD: "Mood",
-  ADD_MOOD: "AddMood",
+  SEARCH_LOCATIONS: "SearchLocations",
 };

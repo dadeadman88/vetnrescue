@@ -1,35 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
 import { Text, View } from "react-native-ui-lib";
-import { commonStyles } from "../../../globalStyle";
-import ProfileImg from "../../atoms/Profile/ProfileImg";
-import { navigate, onBack } from "../../../navigation/RootNavigation";
-import { CustomBtn } from "../../atoms/OnBoardingAtoms/OnBeardingBottomBtn";
-import { InputText } from "../../atoms/InputText";
+import { commonStyles } from "../globalStyle";
+import { navigate, onBack } from "../navigation/RootNavigation";
+import { CustomBtn } from "./atoms/OnBoardingAtoms/OnBeardingBottomBtn";
+import { InputText } from "./atoms/InputText";
 import { useSelector, useDispatch } from "react-redux";
-import { States } from "../../../utils/types";
+import { States } from "../utils/types";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useFocusEffect } from "@react-navigation/native";
-import { MainActions } from "../../../redux/actions/MainActions";
-import { AppDispatch } from "../../../redux/store";
-import { SCREENS, theme } from "../../../constants";
+import { MainActions } from "../redux/actions/MainActions";
+import { AppDispatch } from "../redux/store";
+import { SCREENS, theme } from "../constants";
 import { verticalScale } from "react-native-size-matters";
 import { ToastPresets } from "react-native-ui-lib";
-import { showHideToast } from "../../../redux/slices/OtherSlice";
+import { showHideToast } from "../redux/slices/OtherSlice";
 
-const EditProfileData = () => {
+const AdvertData = () => {
   const dispatch = useDispatch<AppDispatch>();
   const language = useSelector((state: States) => state.Others.language);
-  const isRTL = language === 'ar';
+  const isRTL = language === "ar";
   const countries = useSelector((state: States) => state.Main.Countries);
   const states = useSelector((state: States) => state.Main.States);
   const cities = useSelector((state: States) => state.Main.Cities);
-  
+
   const [fullName, setFullName] = useState("");
   const [description, setDescription] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  
+
   // Validation state for required fields
   const [validationState, setValidationState] = useState({
     fullName: false,
@@ -37,35 +36,35 @@ const EditProfileData = () => {
     email: false,
     description: false,
   });
-  
+
   // Country dropdown state
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryValue, setCountryValue] = useState<string | null>(null);
   const [countryItems, setCountryItems] = useState([
-    { label: 'United Arab Emirates', value: 'UAE' },
-    { label: 'Saudi Arabia', value: 'KSA' },
+    { label: "United Arab Emirates", value: "UAE" },
+    { label: "Saudi Arabia", value: "KSA" },
   ]);
-  
+
   // State dropdown state
   const [stateOpen, setStateOpen] = useState(false);
   const [stateValue, setStateValue] = useState<string | null>(null);
   const [stateItems, setStateItems] = useState([
-    { label: 'Dubai', value: 'Dubai' },
-    { label: 'Abu Dhabi', value: 'Abu Dhabi' },
-    { label: 'Riyadh', value: 'Riyadh' },
-    { label: 'Jeddah', value: 'Jeddah' },
+    { label: "Dubai", value: "Dubai" },
+    { label: "Abu Dhabi", value: "Abu Dhabi" },
+    { label: "Riyadh", value: "Riyadh" },
+    { label: "Jeddah", value: "Jeddah" },
   ]);
-  
+
   // City dropdown state
   const [cityOpen, setCityOpen] = useState(false);
   const [cityValue, setCityValue] = useState<string | null>(null);
   const [cityItems, setCityItems] = useState([
-    { label: 'Downtown Dubai', value: 'Downtown Dubai' },
-    { label: 'Marina', value: 'Marina' },
-    { label: 'Al Khalidiyah', value: 'Al Khalidiyah' },
-    { label: 'Al Markaziyah', value: 'Al Markaziyah' },
-    { label: 'Al Olaya', value: 'Al Olaya' },
-    { label: 'Al Hamra', value: 'Al Hamra' },
+    { label: "Downtown Dubai", value: "Downtown Dubai" },
+    { label: "Marina", value: "Marina" },
+    { label: "Al Khalidiyah", value: "Al Khalidiyah" },
+    { label: "Al Markaziyah", value: "Al Markaziyah" },
+    { label: "Al Olaya", value: "Al Olaya" },
+    { label: "Al Hamra", value: "Al Hamra" },
   ]);
 
   // Call API when component is focused
@@ -82,9 +81,10 @@ const EditProfileData = () => {
         const countryVal = country.id?.toString() || country.code || country.value || String(country);
         return countryVal === countryValue;
       });
-      const countryCode = selectedCountry?.code?.toLowerCase() || 
-                          selectedCountry?.id?.toString()?.toLowerCase() || 
-                          countryValue?.toLowerCase();
+      const countryCode =
+        selectedCountry?.code?.toLowerCase() ||
+        selectedCountry?.id?.toString()?.toLowerCase() ||
+        countryValue?.toLowerCase();
       if (countryCode) {
         dispatch(MainActions.GetStates({ countryCode }));
       }
@@ -98,9 +98,10 @@ const EditProfileData = () => {
         const stateVal = state.id?.toString() || state.code || state.value || String(state);
         return stateVal === stateValue;
       });
-      const stateCode = selectedState?.code?.toLowerCase() || 
-                        selectedState?.id?.toString()?.toLowerCase() || 
-                        stateValue?.toLowerCase();
+      const stateCode =
+        selectedState?.code?.toLowerCase() ||
+        selectedState?.id?.toString()?.toLowerCase() ||
+        stateValue?.toLowerCase();
       if (stateCode) {
         dispatch(MainActions.GetCities({ stateCode }));
       }
@@ -121,21 +122,25 @@ const EditProfileData = () => {
   // Update state items when states data is loaded
   useEffect(() => {
     if (!countryValue) {
-      setStateItems([{
-        label: language === 'ar' ? 'لا توجد ولايات متاحة' : 'No states available',
-        value: '__empty__',
-        disabled: true,
-      }] as any);
+      setStateItems([
+        {
+          label: language === "ar" ? "لا توجد ولايات متاحة" : "No states available",
+          value: "__empty__",
+          disabled: true,
+        },
+      ] as any);
       setStateValue(null);
     } else if (states) {
       const statesObj = states as any;
       if (!Array.isArray(states) && statesObj?.error === true) {
         const errorMessage = statesObj?.message || "No states found for this country";
-        setStateItems([{
-          label: errorMessage,
-          value: '__empty__',
-          disabled: true,
-        }] as any);
+        setStateItems([
+          {
+            label: errorMessage,
+            value: "__empty__",
+            disabled: true,
+          },
+        ] as any);
         setStateValue(null);
       } else if (Array.isArray(states) && states.length > 0) {
         const formattedStates = states.map((state: any) => ({
@@ -144,11 +149,13 @@ const EditProfileData = () => {
         }));
         setStateItems(formattedStates);
       } else {
-        setStateItems([{
-          label: "No states found for this country",
-          value: '__empty__',
-          disabled: true,
-        }] as any);
+        setStateItems([
+          {
+            label: "No states found for this country",
+            value: "__empty__",
+            disabled: true,
+          },
+        ] as any);
         setStateValue(null);
       }
     }
@@ -157,21 +164,25 @@ const EditProfileData = () => {
   // Update city items when cities data is loaded
   useEffect(() => {
     if (!stateValue) {
-      setCityItems([{
-        label: language === 'ar' ? 'لا توجد مدن متاحة' : 'No cities available',
-        value: '__empty__',
-        disabled: true,
-      }] as any);
+      setCityItems([
+        {
+          label: language === "ar" ? "لا توجد مدن متاحة" : "No cities available",
+          value: "__empty__",
+          disabled: true,
+        },
+      ] as any);
       setCityValue(null);
     } else if (cities) {
       const citiesObj = cities as any;
       if (!Array.isArray(cities) && citiesObj?.error === true) {
         const errorMessage = citiesObj?.message || "No cities found for this state";
-        setCityItems([{
-          label: errorMessage,
-          value: '__empty__',
-          disabled: true,
-        }] as any);
+        setCityItems([
+          {
+            label: errorMessage,
+            value: "__empty__",
+            disabled: true,
+          },
+        ] as any);
         setCityValue(null);
       } else if (Array.isArray(cities) && cities.length > 0) {
         const formattedCities = cities.map((city: any) => ({
@@ -180,11 +191,13 @@ const EditProfileData = () => {
         }));
         setCityItems(formattedCities);
       } else {
-        setCityItems([{
-          label: "No cities found for this state",
-          value: '__empty__',
-          disabled: true,
-        }] as any);
+        setCityItems([
+          {
+            label: "No cities found for this state",
+            value: "__empty__",
+            disabled: true,
+          },
+        ] as any);
         setCityValue(null);
       }
     }
@@ -211,7 +224,7 @@ const EditProfileData = () => {
       dispatch(
         showHideToast({
           visible: true,
-          message: language === 'ar' ? "الاسم الكامل مطلوب" : "Full Name is required",
+          message: language === "ar" ? "الاسم الكامل مطلوب" : "Full Name is required",
           preset: ToastPresets.FAILURE,
         })
       );
@@ -222,7 +235,7 @@ const EditProfileData = () => {
       dispatch(
         showHideToast({
           visible: true,
-          message: language === 'ar' ? "رقم الهاتف مطلوب" : "Phone Number is required",
+          message: language === "ar" ? "رقم الهاتف مطلوب" : "Phone Number is required",
           preset: ToastPresets.FAILURE,
         })
       );
@@ -230,9 +243,14 @@ const EditProfileData = () => {
     }
 
     if (!isEmailValid) {
-      const emailMessage = email.trim().length === 0
-        ? (language === 'ar' ? "البريد الإلكتروني مطلوب" : "Email is required")
-        : (language === 'ar' ? "البريد الإلكتروني غير صحيح" : "Email is invalid");
+      const emailMessage =
+        email.trim().length === 0
+          ? language === "ar"
+            ? "البريد الإلكتروني مطلوب"
+            : "Email is required"
+          : language === "ar"
+            ? "البريد الإلكتروني غير صحيح"
+            : "Email is invalid";
       dispatch(
         showHideToast({
           visible: true,
@@ -247,7 +265,7 @@ const EditProfileData = () => {
       dispatch(
         showHideToast({
           visible: true,
-          message: language === 'ar' ? "الرسالة مطلوبة" : "Message is required",
+          message: language === "ar" ? "الرسالة مطلوبة" : "Message is required",
           preset: ToastPresets.FAILURE,
         })
       );
@@ -269,7 +287,7 @@ const EditProfileData = () => {
             return countryVal === countryValue;
           });
           if (selectedCountry?.id) {
-            countryId = typeof selectedCountry.id === 'number' ? selectedCountry.id : parseInt(selectedCountry.id);
+            countryId = typeof selectedCountry.id === "number" ? selectedCountry.id : parseInt(selectedCountry.id);
           } else if (countryValue) {
             // If value is already a number, use it directly
             const parsed = parseInt(countryValue);
@@ -286,7 +304,7 @@ const EditProfileData = () => {
             return stateVal === stateValue;
           });
           if (selectedState?.id) {
-            stateId = typeof selectedState.id === 'number' ? selectedState.id : parseInt(selectedState.id);
+            stateId = typeof selectedState.id === "number" ? selectedState.id : parseInt(selectedState.id);
           } else if (stateValue) {
             const parsed = parseInt(stateValue);
             if (!isNaN(parsed)) {
@@ -302,7 +320,7 @@ const EditProfileData = () => {
             return cityVal === cityValue;
           });
           if (selectedCity?.id) {
-            cityId = typeof selectedCity.id === 'number' ? selectedCity.id : parseInt(selectedCity.id);
+            cityId = typeof selectedCity.id === "number" ? selectedCity.id : parseInt(selectedCity.id);
           } else if (cityValue) {
             const parsed = parseInt(cityValue);
             if (!isNaN(parsed)) {
@@ -323,13 +341,13 @@ const EditProfileData = () => {
         };
 
         // Call API
-        const result = await dispatch(MainActions.SubmitContact(payload)).unwrap();
-        
+        await dispatch(MainActions.SubmitContact(payload)).unwrap();
+
         // Show success message
         dispatch(
           showHideToast({
             visible: true,
-            message: language === 'ar' ? "تم إرسال الرسالة بنجاح" : "Message sent successfully",
+            message: language === "ar" ? "تم إرسال الرسالة بنجاح" : "Message sent successfully",
             preset: ToastPresets.SUCCESS,
           })
         );
@@ -338,59 +356,59 @@ const EditProfileData = () => {
         onBack();
       } catch (error: any) {
         // Error handling is done by the axios interceptor, but we can add additional handling here if needed
-        console.error('Error submitting contact form:', error);
+        console.error("Error submitting contact form:", error);
         // The interceptor already shows the error toast, so we don't need to show it again
       }
     }
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={commonStyles.footerContainer}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
         <InputText
           value={fullName}
-          placeholder={language === 'ar' ? "الاسم الكامل" : "Full Name"}
+          placeholder={language === "ar" ? "الاسم الكامل" : "Full Name"}
           onChangeText={(text: string) => setFullName(text)}
-          style={{ textAlign: isRTL ? 'right' : 'left' }}
+          style={{ textAlign: isRTL ? "right" : "left" }}
           validate={["required"]}
-          validationMessage={[language === 'ar' ? "الاسم الكامل مطلوب" : "Full Name is required"]}
+          validationMessage={[language === "ar" ? "الاسم الكامل مطلوب" : "Full Name is required"]}
           onValidationFailed={(isValid: boolean) => {
-            setValidationState(prev => ({ ...prev, fullName: !isValid }));
+            setValidationState((prev) => ({ ...prev, fullName: !isValid }));
           }}
         />
         <InputText
           value={phoneNumber}
-          placeholder={language === 'ar' ? "رقم الهاتف" : "Phone Number"}
-          style={{ marginTop: -10, textAlign: isRTL ? 'right' : 'left' }}
+          placeholder={language === "ar" ? "رقم الهاتف" : "Phone Number"}
+          style={{ marginTop: -10, textAlign: isRTL ? "right" : "left" }}
           onChangeText={(text: string) => setPhoneNumber(text)}
           keyboardType="phone-pad"
           validate={["required"]}
-          validationMessage={[language === 'ar' ? "رقم الهاتف مطلوب" : "Phone Number is required"]}
+          validationMessage={[language === "ar" ? "رقم الهاتف مطلوب" : "Phone Number is required"]}
           onValidationFailed={(isValid: boolean) => {
-            setValidationState(prev => ({ ...prev, phoneNumber: !isValid }));
+            setValidationState((prev) => ({ ...prev, phoneNumber: !isValid }));
           }}
         />
         <InputText
           value={email}
-          placeholder={language === 'ar' ? "البريد الإلكتروني" : "Email"}
-          style={{ marginTop: -10, textAlign: isRTL ? 'right' : 'left' }}
+          placeholder={language === "ar" ? "البريد الإلكتروني" : "Email"}
+          style={{ marginTop: -10, textAlign: isRTL ? "right" : "left" }}
           onChangeText={(text: string) => setEmail(text)}
           keyboardType="email-address"
           autoCapitalize="none"
           validate={["required", "email"]}
           validationMessage={[
-            language === 'ar' ? "البريد الإلكتروني مطلوب" : "Email is required",
-            language === 'ar' ? "البريد الإلكتروني غير صحيح" : "Email is invalid"
+            language === "ar" ? "البريد الإلكتروني مطلوب" : "Email is required",
+            language === "ar" ? "البريد الإلكتروني غير صحيح" : "Email is invalid",
           ]}
           onValidationFailed={(isValid: boolean) => {
-            setValidationState(prev => ({ ...prev, email: !isValid }));
+            setValidationState((prev) => ({ ...prev, email: !isValid }));
           }}
         />
-        
+
         {/* Country Dropdown */}
         <View style={{ marginTop: -10, zIndex: 2000 }}>
           <DropDownPicker
@@ -398,7 +416,7 @@ const EditProfileData = () => {
             value={countryValue}
             items={countryItems}
             setOpen={(isOpen) => {
-              const newValue = typeof isOpen === 'function' ? isOpen(countryOpen) : isOpen;
+              const newValue = typeof isOpen === "function" ? isOpen(countryOpen) : isOpen;
               setCountryOpen(newValue);
               if (newValue) {
                 setStateOpen(false);
@@ -410,35 +428,36 @@ const EditProfileData = () => {
               let stringValue: string | null = null;
               if (value === null || value === undefined) {
                 stringValue = null;
-              } else if (typeof value === 'string') {
+              } else if (typeof value === "string") {
                 stringValue = value;
-              } else if (typeof value !== 'function') {
+              } else if (typeof value !== "function") {
                 stringValue = String(value);
               }
-              
+
               // Clear states and city when country changes
               setStateItems([]);
               setStateValue(null);
               setCityItems([]);
               setCityValue(null);
-              
+
               // Call API to get states for selected country
               if (stringValue && countries && Array.isArray(countries)) {
                 const selectedCountry = countries.find((country: any) => {
                   const countryVal = country.id?.toString() || country.code || country.value || String(country);
                   return countryVal === stringValue;
                 });
-                
-                const countryCode = selectedCountry?.code?.toLowerCase() || 
-                                   selectedCountry?.id?.toString()?.toLowerCase() || 
-                                   stringValue?.toLowerCase();
+
+                const countryCode =
+                  selectedCountry?.code?.toLowerCase() ||
+                  selectedCountry?.id?.toString()?.toLowerCase() ||
+                  stringValue?.toLowerCase();
                 if (countryCode) {
                   dispatch(MainActions.GetStates({ countryCode }));
                 }
               }
             }}
             setItems={setCountryItems}
-            placeholder={language === 'ar' ? 'اختر الدولة' : 'Select Country'}
+            placeholder={language === "ar" ? "اختر الدولة" : "Select Country"}
             style={styles.dropdownPicker}
             dropDownContainerStyle={styles.dropdownContainerStyle}
             textStyle={styles.dropdownText}
@@ -455,7 +474,7 @@ const EditProfileData = () => {
             value={stateValue}
             items={stateItems}
             setOpen={(isOpen) => {
-              const newValue = typeof isOpen === 'function' ? isOpen(stateOpen) : isOpen;
+              const newValue = typeof isOpen === "function" ? isOpen(stateOpen) : isOpen;
               setStateOpen(newValue);
               if (newValue) {
                 setCountryOpen(false);
@@ -467,33 +486,34 @@ const EditProfileData = () => {
               let stringValue: string | null = null;
               if (value === null || value === undefined) {
                 stringValue = null;
-              } else if (typeof value === 'string') {
+              } else if (typeof value === "string") {
                 stringValue = value;
-              } else if (typeof value !== 'function') {
+              } else if (typeof value !== "function") {
                 stringValue = String(value);
               }
-              
+
               // Clear cities when state changes
               setCityItems([]);
               setCityValue(null);
-              
+
               // Call API to get cities for selected state
               if (stringValue && states && Array.isArray(states)) {
                 const selectedState = states.find((state: any) => {
                   const stateVal = state.id?.toString() || state.code || state.value || String(state);
                   return stateVal === stringValue;
                 });
-                
-                const stateCode = selectedState?.code?.toLowerCase() || 
-                                 selectedState?.id?.toString()?.toLowerCase() || 
-                                 stringValue?.toLowerCase();
+
+                const stateCode =
+                  selectedState?.code?.toLowerCase() ||
+                  selectedState?.id?.toString()?.toLowerCase() ||
+                  stringValue?.toLowerCase();
                 if (stateCode) {
                   dispatch(MainActions.GetCities({ stateCode }));
                 }
               }
             }}
             setItems={setStateItems}
-            placeholder={language === 'ar' ? 'اختر الولاية' : 'Select State'}
+            placeholder={language === "ar" ? "اختر الولاية" : "Select State"}
             disabled={!countryValue || (stateItems.length === 1 && (stateItems[0] as any)?.disabled)}
             style={styles.dropdownPicker}
             dropDownContainerStyle={styles.dropdownContainerStyle}
@@ -511,7 +531,7 @@ const EditProfileData = () => {
             value={cityValue}
             items={cityItems}
             setOpen={(isOpen) => {
-              const newValue = typeof isOpen === 'function' ? isOpen(cityOpen) : isOpen;
+              const newValue = typeof isOpen === "function" ? isOpen(cityOpen) : isOpen;
               setCityOpen(newValue);
               if (newValue) {
                 setCountryOpen(false);
@@ -519,11 +539,11 @@ const EditProfileData = () => {
               }
             }}
             setValue={setCityValue}
-            onChangeValue={(value) => {
+            onChangeValue={() => {
               // Just update local state, don't persist to Redux
             }}
             setItems={setCityItems}
-            placeholder={language === 'ar' ? 'اختر المدينة' : 'Select City'}
+            placeholder={language === "ar" ? "اختر المدينة" : "Select City"}
             disabled={!stateValue || (cityItems.length === 1 && (cityItems[0] as any)?.disabled)}
             style={styles.dropdownPicker}
             dropDownContainerStyle={styles.dropdownContainerStyle}
@@ -536,31 +556,40 @@ const EditProfileData = () => {
 
         <InputText
           value={description}
-          placeholder={language === 'ar' ? "رسالة" : "Message"}
+          placeholder={language === "ar" ? "رسالة" : "Message"}
           multiline={true}
           style={{
             paddingTop: 10,
             marginTop: -10,
             height: 150,
-            textAlign: isRTL ? 'right' : 'left',
-            textAlignVertical: 'top',
+            textAlign: isRTL ? "right" : "left",
+            textAlignVertical: "top",
           }}
           onChangeText={(text: string) => setDescription(text)}
           validate={["required"]}
-          validationMessage={[language === 'ar' ? "الرسالة مطلوبة" : "Message is required"]}
+          validationMessage={[language === "ar" ? "الرسالة مطلوبة" : "Message is required"]}
           onValidationFailed={(isValid: boolean) => {
-            setValidationState(prev => ({ ...prev, description: !isValid }));
+            setValidationState((prev) => ({ ...prev, description: !isValid }));
           }}
         />
 
         <View marginV-10>
           <TouchableOpacity onPress={() => navigate(SCREENS.PRIVACY)} activeOpacity={0.8}>
-            <Text style={{ textDecorationLine: 'underline', color: theme.color.primary, textAlign:"center", fontSize:18 }}>{language === 'ar' ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}</Text>
+            <Text
+              style={{
+                textDecorationLine: "underline",
+                color: theme.color.primary,
+                textAlign: "center",
+                fontSize: 18,
+              }}
+            >
+              {language === "ar" ? "الشروط وسياسة الخصوصية" : "Terms & Privacy Policy"}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <View marginV-20 style={{ marginBottom: 40}}>
-          <CustomBtn label={language === 'ar' ? "إرسال" : "Submit"} onPress={handleSubmit} />
+        <View marginV-20 style={{ marginBottom: 60 }}>
+          <CustomBtn label={language === "ar" ? "إرسال" : "Submit"} onPress={handleSubmit} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -573,10 +602,10 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 10,
     height: verticalScale(50),
-    marginVertical: verticalScale(15)
+    marginVertical: verticalScale(15),
   },
   dropdownContainerStyle: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.color.divider,
@@ -590,4 +619,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfileData;
+export default AdvertData;
+

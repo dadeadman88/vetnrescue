@@ -1,6 +1,6 @@
 import * as React from "react";
 import SafeAreaContainer from "../../containers/SafeAreaContainer";
-import { theme } from "../../constants";
+import { IMAGES, theme } from "../../constants";
 import { View } from "react-native-ui-lib";
 import { TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { Typography } from "../../components/atoms/Typography";
@@ -12,11 +12,18 @@ import { MainActions } from "../../redux/actions/MainActions";
 import { AppDispatch } from "../../redux/store";
 import { setCity } from "../../redux/slices/OtherSlice";
 
-interface AddMoodProps {}
+interface SearchLocationsProps {}
+
+export const MOODS = [
+  { value: "happy", img: IMAGES.pr1 },
+  { value: "sad", img: IMAGES.pr2 },
+  { value: "angry", img: IMAGES.pr3 },
+  { value: "excited", img: IMAGES.pr4 },
+  { value: "tired", img: IMAGES.pr5 },
+];
 
 const CityItem = ({ item, onSelect }: { item: any; onSelect: (cityId: string) => void }) => {
   const handlePress = () => {
-    // Extract city ID from the item
     const cityId = item.id?.toString() || item.code || item.value || String(item.id || item);
     onSelect(cityId);
   };
@@ -25,35 +32,33 @@ const CityItem = ({ item, onSelect }: { item: any; onSelect: (cityId: string) =>
     <TouchableOpacity style={styles.cityItem} onPress={handlePress}>
       <Typography textType="regular" size={16}>
         {item.name || item.city_name || item.title || String(item)}
-        {item.country ? `, ${item.country}` : ''}
+        {item.country ? `, ${item.country}` : ""}
       </Typography>
     </TouchableOpacity>
   );
 };
 
-const AddMood = () => {
+const SearchLocations = () => {
   const dispatch = useDispatch<AppDispatch>();
   const reduxCountry = useSelector((state: States) => state.Others.country);
   const countries = useSelector((state: States) => state.Main.Countries);
   const cities = useSelector((state: States) => state.Main.Cities);
 
-  // Get country ID from Redux state or use default ID 1
   const getCountryId = React.useCallback(() => {
     if (reduxCountry && countries && Array.isArray(countries) && countries.length > 0) {
       const selectedCountry = countries.find((country: any) => {
         const countryValue = country.id?.toString() || country.code || country.value || String(country);
         return countryValue === reduxCountry;
       });
-      
+
       if (selectedCountry?.id) {
         return selectedCountry.id.toString();
       }
     }
-    // Default to ID 1 if no country is selected
-    return '1';
+
+    return "1";
   }, [reduxCountry, countries]);
 
-  // Fetch cities when screen is focused
   useFocusEffect(
     React.useCallback(() => {
       const countryId = getCountryId();
@@ -61,30 +66,27 @@ const AddMood = () => {
     }, [dispatch, getCountryId])
   );
 
-  // Format cities data for display
   const formattedCities = React.useMemo(() => {
     if (!cities) return [];
-    
-    // Handle error response
+
     if (!Array.isArray(cities) && (cities as any)?.error) {
       return [];
     }
-    
-    // Handle array of cities
+
     if (Array.isArray(cities)) {
       return cities;
     }
-    
+
     return [];
   }, [cities]);
 
-  // Handle city selection
-  const handleCitySelect = React.useCallback((cityId: string) => {
-    // Store city ID in Redux
-    dispatch(setCity(cityId));
-    // Navigate back
-    onBack();
-  }, [dispatch]);
+  const handleCitySelect = React.useCallback(
+    (cityId: string) => {
+      dispatch(setCity(cityId));
+      onBack();
+    },
+    [dispatch]
+  );
 
   return (
     <SafeAreaContainer safeArea={false}>
@@ -116,16 +118,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: "#E0E0E0",
   },
   listContent: {
     paddingBottom: 40,
   },
   emptyContainer: {
     paddingVertical: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
-export default AddMood;
+export default SearchLocations;
+
